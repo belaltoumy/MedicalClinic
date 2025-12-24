@@ -9,7 +9,7 @@
   @input="emit('update:modelValue', inputValue)"
 />
 
-    <label :class="{ 'label-float': isFocused || inputValue.length > 0 }" for="user">{{ lable }}</label>
+    <label :class="{ 'label-float': isFocused || inputValue.length > 0 }" for="user">{{ label }}</label>
   </div>
 </template>
 
@@ -17,7 +17,7 @@
 import { ref, defineProps, defineEmits, watch } from "vue";
 
 const props = defineProps({
-  lable: {
+  label: {
     type: String,
     default: "",
   },

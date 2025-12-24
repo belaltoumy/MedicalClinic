@@ -1,7 +1,6 @@
 <!-- src/components/viewDetailsVisit.vue -->
 <template>
   <div class="details-container" dir="rtl">
-
     <!-- Loading -->
     <div v-if="loading" class="loading text-center py-8">
       <p>جاري تحميل التفاصيل...</p>
@@ -14,42 +13,60 @@
 
     <!-- Visit Details -->
     <div v-else-if="visit" class="space-y-6">
-
       <!-- معلومات الزيارة -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="info-card">
-          <span class="label">اسم الطبيب</span>
-          <span class="value">{{ visit.doctorName || "غير محدد" }}</span>
-        </div>
+      <div
+        class="mt-2 overflow-x-auto rounded-lg shadow-lg border border-gray-200"
+      >
+        <table class="min-w-full bg-white">
+          <tbody class="divide-y divide-gray-200 bg-gray-200">
+            <tr>
+              <td class="px-6 py-4 font-semibold text-center">اسم الطبيب</td>
+              <td class="px-6 py-4 text-center">
+                {{ visit.doctorName || "غير محدد" }}
+              </td>
+            </tr>
 
-        <div class="info-card">
-          <span class="label">اسم المريض</span>
-          <span class="value">{{ visit.patientFullName || "غير محدد" }}</span>
-        </div>
+            <tr>
+              <td class="px-6 py-4 font-semibold text-center">اسم المريض</td>
+              <td class="px-6 py-4 text-center">
+                {{ visit.patientFullName || "غير محدد" }}
+              </td>
+            </tr>
 
-        <div class="info-card">
-          <span class="label">تاريخ الزيارة</span>
-          <span class="value">{{ formatDate(visit.visitDate) }}</span>
-        </div>
+            <tr>
+              <td class="px-6 py-4 font-semibold text-center">تاريخ الزيارة</td>
+              <td class="px-6 py-4 text-center">
+                {{ formatDate(visit.visitDate) }}
+              </td>
+            </tr>
 
-        <div class="info-card">
-          <span class="label">التكلفة الإجمالية</span>
-          <span class="value">{{ visit.totalCost }} ₪</span>
-        </div>
+            <tr>
+              <td class="px-6 py-4 font-semibold text-center">
+                التكلفة الإجمالية
+              </td>
+              <td class="px-6 py-4 text-center font-bold text-indigo-700">
+                {{ visit.totalCost }}
+              </td>
+            </tr>
 
-        <div class="info-card">
-          <span class="label">نوع الزيارة</span>
-          <span class="value">{{ getTypeName(visit.type) }}</span>
-        </div>
+            <tr>
+              <td class="px-6 py-4 font-semibold text-center">نوع الزيارة</td>
+              <td class="px-6 py-4 text-center">
+                {{ getTypeName(visit.type) }}
+              </td>
+            </tr>
 
-        <div class="info-card">
-          <span class="label">حالة الزيارة</span>
-          <span class="value">{{ getStatusName(visit.status) }}</span>
-        </div>
+            <tr>
+              <td class="px-6 py-4 font-semibold text-center">حالة الزيارة</td>
+              <td class="px-6 py-4 text-center">
+                {{ getStatusName(visit.status) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <!-- زر إضافة زيارة فرعية -->
-      <div class="mt-8 text-center">
+      <div class="mt-8 flex justify-center gap-4">
         <button @click="openAddSubVisitDialog" class="add-subvisit-btn">
           <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
             <path
@@ -59,6 +76,10 @@
             ></path>
           </svg>
           إضافة زيارة مراجعة (فرعية)
+        </button>
+
+        <button class="add-subvisit-btn" @click="showPaymentsDialog = true">
+          تفاصيل الدفعات
         </button>
       </div>
 
@@ -99,64 +120,75 @@
           </div>
         </div>
       </compoDialog>
+      <compoDialog v-model="showPaymentsDialog" title="تفاصيل الدفعات">
+        <PaymentDetails :patientId="visit.patientId" />
+
+      </compoDialog>
 
       <!-- عناصر الزيارة -->
-     <div class="mt-12">
-  <h3 class="text-2xl font-bold mb-6 text-indigo-700 text-right">
-    عناصر الزيارة
-  </h3>
+      <div class="mt-12">
+        <h3 class="text-2xl font-bold mb-6 text-indigo-700 text-right">
+          عناصر الزيارة
+        </h3>
 
-  <div
-    v-if="visit.visitItems?.length"
-    class="overflow-x-auto rounded-lg shadow-lg border border-gray-200"
-  >
-    <table class="min-w-full bg-white">
-      <thead class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-        <tr>
-          <th class="px-6 py-4 text-center">#</th>
-          <th class="px-6 py-4 text-center">الإجراء الطبي</th>
-          <th class="px-6 py-4 text-center">التكلفة</th>
-          <th class="px-6 py-4 text-center">المواد المستهلكة</th>
-          <th class="px-6 py-4 text-center">الكمية</th>
-        </tr>
-      </thead>
-
-      <tbody class="divide-y divide-gray-200">
-        <tr
-          v-for="(item, index) in visit.visitItems"
-          :key="item.visitItemId"
-          class="hover:bg-gray-50"
+        <div
+          v-if="visit.visitItems?.length"
+          class="overflow-x-auto rounded-lg shadow-lg border border-gray-200"
         >
-          <td class="px-6 py-4 text-center">{{ index + 1 }}</td>
-          <td class="px-6 py-4">{{ item.procedureName }}</td>
-          <td class="px-6 py-4">{{ item.cost }} ₪</td>
+          <table class="min-w-full bg-white">
+            <thead
+              class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
+            >
+              <tr>
+                <th class="px-6 py-4 text-center">#</th>
+                <th class="px-6 py-4 text-center">الإجراء الطبي</th>
+                <th class="px-6 py-4 text-center">التكلفة</th>
+                <th class="px-6 py-4 text-center">المواد المستهلكة</th>
+                <th class="px-6 py-4 text-center">الكمية</th>
+              </tr>
+            </thead>
 
-          <!-- المواد المستهلكة -->
-          <td class="px-6 py-4">
-  <div v-for="mat in item.materialConsumptions" :key="mat.consumptionId">
-    {{ mat.materialName }}
-  </div>
-</td>
+            <tbody class="divide-y divide-gray-200">
+              <tr
+                v-for="(item, index) in visit.visitItems"
+                :key="item.visitItemId"
+                class="hover:bg-gray-50"
+              >
+                <td class="px-6 py-4 text-center">{{ index + 1 }}</td>
+                <td class="px-6 py-4">{{ item.procedureName }}</td>
+                <td class="px-6 py-4">{{ item.cost }}</td>
 
-          <!-- الكميات -->
-         <td class="px-6 py-4 text-center">
-  <div v-for="mat in item.materialConsumptions" :key="mat.consumptionId">
-    {{ mat.quantity }}
-  </div>
-</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+                <!-- المواد المستهلكة -->
+                <td class="px-6 py-4">
+                  <div
+                    v-for="mat in item.materialConsumptions"
+                    :key="mat.consumptionId"
+                  >
+                    {{ mat.materialName }}
+                  </div>
+                </td>
 
-  <div
-    v-else
-    class="text-center py-12 text-gray-500 bg-gray-50 border border-dashed border-gray-300 rounded-lg"
-  >
-    <p class="text-lg">لا توجد عناصر للعرض</p>
-  </div>
-</div>
+                <!-- الكميات -->
+                <td class="px-6 py-4 text-center">
+                  <div
+                    v-for="mat in item.materialConsumptions"
+                    :key="mat.consumptionId"
+                  >
+                    {{ mat.quantity }}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
+        <div
+          v-else
+          class="text-center py-12 text-gray-500 bg-gray-50 border border-dashed border-gray-300 rounded-lg"
+        >
+          <p class="text-lg">لا توجد عناصر للعرض</p>
+        </div>
+      </div>
 
       <!-- الزيارات الفرعية -->
       <div class="mt-12">
@@ -169,7 +201,9 @@
           class="overflow-x-auto rounded-lg shadow-lg border border-gray-200"
         >
           <table class="min-w-full bg-white">
-            <thead class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+            <thead
+              class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
+            >
               <tr>
                 <th class="px-6 py-4 text-center">رقم الزيارة</th>
                 <th class="px-6 py-4 text-center">اسم المريض</th>
@@ -192,12 +226,16 @@
                 <td class="px-6 py-4">{{ sub.patientFullName }}</td>
                 <td class="px-6 py-4">{{ sub.doctorName }}</td>
                 <td class="px-6 py-4">{{ formatDate(sub.visitDate) }}</td>
-                <td class="px-6 py-4">{{ sub.totalCost }} ₪</td>
+                <td class="px-6 py-4">{{ sub.totalCost }}</td>
 
                 <td class="px-6 py-4">
                   <span
                     class="px-3 py-1 rounded-full text-xs font-medium"
-                    :class="sub.type === 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'"
+                    :class="
+                      sub.type === 0
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-green-100 text-green-800'
+                    "
                   >
                     {{ getTypeName(sub.type) }}
                   </span>
@@ -206,7 +244,11 @@
                 <td class="px-6 py-4">
                   <span
                     class="px-3 py-1 rounded-full text-xs font-medium"
-                    :class="sub.status === 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'"
+                    :class="
+                      sub.status === 0
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-green-100 text-green-800'
+                    "
                   >
                     {{ getStatusName(sub.status) }}
                   </span>
@@ -237,7 +279,9 @@
           class="text-center py-12 text-gray-500 bg-gray-50 border border-dashed border-gray-300 rounded-lg"
         >
           <p class="text-lg">لا توجد زيارات مراجعة بعد</p>
-          <p class="text-sm mt-2">يمكنك إضافة زيارة مراجعة بالضغط على الزر أعلاه</p>
+          <p class="text-sm mt-2">
+            يمكنك إضافة زيارة مراجعة بالضغط على الزر أعلاه
+          </p>
         </div>
       </div>
     </div>
@@ -246,16 +290,18 @@
     <div v-else class="text-center py-8 text-gray-500">
       لا توجد بيانات لعرضها
     </div>
-
   </div>
 </template>
-
 
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import { _get, _post, _delete } from "../api/axois";
 import compoDialog from "./compoDialog.vue";
 import InputSelect from "./InputSelect.vue";
+import PaymentDetails from "./viewDetailsPayment.vue";
+
+
+const showPaymentsDialog = ref(false);
 
 const props = defineProps({
   visitId: {
@@ -347,6 +393,7 @@ const deleteSubVisit = async (id) => {
     alert("حدث خطأ أثناء عملية الحذف");
   }
 };
+
 
 // تحديث عند تغيير visitId
 watch(() => props.visitId, fetchVisitDetails, { immediate: true });

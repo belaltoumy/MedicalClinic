@@ -23,7 +23,7 @@ const routes = [
   {
     path: "/doctors",
     name: "doctors",
-    component: () => import("../view/doctorsPage.vue"),
+    component: () => import("../view/Doctors/doctorsPage.vue"),
   },
   {
     path: "/materials",
@@ -49,6 +49,16 @@ const routes = [
     path: "/payments",
     name: "payments",
     component: () => import("../view/Payments.vue"),
+  },
+  {
+    path: "/expenses",
+    name: "expenses",
+    component: () => import("../view/Expenses/Expenses.vue"),
+  },
+  {
+    path: "/accessibility",
+    name: "accessibility",
+    component: () => import("../view/Accessibility/Accessibility.vue"),
   },
   // باقي الصفحات هنا
 ];

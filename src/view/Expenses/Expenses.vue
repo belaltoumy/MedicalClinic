@@ -1,23 +1,29 @@
 <template>
   <Dashboard>
-  <div class="payment-container" dir="rtl">
+  <div class="doctors-container" dir="rtl">
     <!-- الهيدر -->
     <header class="page-header">
       <div class="header-content">
         <div class="title-section">
           <div class="title-icon">
             <svg fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                clip-rule="evenodd"
-              ></path>
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
             </svg>
           </div>
           <div class="title-text">
-            <h1 class="page-title">إدارة الدفعات</h1>
+            <h1 class="page-title">إدارة المصاريف</h1>
           </div>
         </div>
+        
+        <button
+          @click="showDialogAdd = true"
+          class="add-btn"
+        >
+          <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+          </svg>
+          إضافة مصروف جديد
+        </button>
       </div>
     </header>
 
@@ -27,38 +33,33 @@
       <div class="table-section">
         <compoTable
           :columns="columns"
-          :rows="formattedPayments"
+          :rows="Expenses"
           :loading="loading"
           :showActions="true"
         >
           <template #actions="{ row }">
-            <button class="action-btn edit-btn" @click="openEditPayment(row)">
+            <button
+              class="action-btn edit-btn"
+              @click="editPatient(row)"
+            >
               <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
-                ></path>
+                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
               </svg>
               تعديل
             </button>
-            <button class="action-btn delete-btn" @click="deletePayment(row)">
+            <button
+              class="action-btn delete-btn"
+              @click="deleteExpense(row)"
+            >
               <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fill-rule="evenodd"
-                  d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"
-                  clip-rule="evenodd"
-                ></path>
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clip-rule="evenodd"
-                ></path>
+                <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"></path>
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
               </svg>
               حذف
             </button>
           </template>
         </compoTable>
       </div>
-
       <!-- التنقل بين الصفحات -->
       <div class="pagination-section">
         <button
@@ -67,19 +68,15 @@
           @click="prevPage"
         >
           <svg class="pagination-icon" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-              clip-rule="evenodd"
-            ></path>
+            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
           </svg>
           السابق
         </button>
-
+        
         <div class="pagination-info">
           صفحة {{ pageNumber }} من {{ totalPages }}
         </div>
-
+        
         <button
           class="pagination-btn"
           :disabled="pageNumber === totalPages"
@@ -87,159 +84,119 @@
         >
           التالي
           <svg class="pagination-icon" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clip-rule="evenodd"
-            ></path>
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
           </svg>
         </button>
       </div>
     </main>
-    <compoDialog v-model="showEditDialog" title="تعديل الدفعة">
-      <input-number label="المبلغ" v-model="editPaymentData.amount" />
 
-      <input-select label="طريقة الدفع" v-model="editPaymentData.type">
-        <option :value="0">نقدي</option>
-        <option :value="1">بطاقة</option>
-        <option :value="2">شيك</option>
-      </input-select>
-
-      <button class="add-btn" @click="updatePayment">حفظ التعديلات</button>
-    </compoDialog>
+    <!-- نافذة الإضافة -->
+    <compoAddDialog v-model="showDialogAdd" title="إضافة مصروف جديد">
+        <addNewExpense @saved="handleExpenseAdded" />
+    </compoAddDialog>
   </div>
   </Dashboard>
 </template>
 
 <script setup>
-import Dashboard from "../components/dashboard.vue";
-import { ref, onMounted, computed } from "vue";
-import compoTable from "../components/compoTable.vue";
-import compoDialog from "../components/compoDialog.vue";
-import inputNumber from "../components/inputNumber.vue";
-import inputSelect from "../components/InputSelect.vue";
-import { _get, _delete, _put } from "../api/axois";
+import { ref, onMounted } from 'vue';
+import compoTable from '../../components/compoTable.vue';
+import compoAddDialog from '../../components/compoAddDialog.vue';
+import addNewExpense from '../Expenses/addNewExpense.vue';
+import { _get ,_delete } from '../../api/axois';
+import Dashboard from '../../components/dashboard.vue';
 
-const Payments = ref([]);
+const Expenses = ref([]);
 const loading = ref(false);
 
 const pageNumber = ref(1);
 const pageSize = ref(10);
 const totalPages = ref(1);
-
-const showEditDialog = ref(false);
-
-const editPaymentData = ref({
-  paymentId: null,
-  amount: null,
-  type: 0,
-});
+const showDialogAdd = ref(false);
 
 const columns = [
-  { key: "patienName", label: "اسم المريض" },
-  { key: "amount", label: "المبلغ المدفوع" },
-  { key: "paymentDate", label: "تاريخ الدفع" },
-  { key: "type", label: "طريقة الدفع" },
+  { key: 'expenseTypeName', label: 'نوع المصروف' },
+  { key: 'description', label: 'الوصف' },
+  { key: 'amount', label: 'المبلغ' },
+  { key: 'expenseDate', label: 'تاريخ الصرف' },
+  { key: 'userName', label: 'المستخدم' }
 ];
 
-// دالة جلب الدفعات
-const fetchPayments = async () => {
+// دالة جلب المصاريف
+const fetchExpenses = async () => {
   loading.value = true;
   try {
-    const res = await _get("/api/Payments", {
+    const res = await _get('/api/Expenses', {
       params: {
         pageNumber: pageNumber.value,
-        pageSize: pageSize.value,
-      },
+        pageSize: pageSize.value
+      }
     });
 
-    Payments.value = res.data.data; // صح
+    Expenses.value = res.data.data;   
     totalPages.value = res.data.totalPages;
-  } catch (error) {
+  } 
+  catch (error) {
     console.error(error);
-  } finally {
+  } 
+  finally {
     loading.value = false;
   }
 };
 
+
 const prevPage = () => {
   if (pageNumber.value > 1) {
     pageNumber.value--;
-    fetchProcedures();
+    fetchExpenses();
   }
 };
 
 const nextPage = () => {
   if (pageNumber.value < totalPages.value) {
     pageNumber.value++;
-    fetchProcedures();
+    fetchExpenses();
   }
 };
 
-const openEditPayment = (payment) => {
-  editPaymentData.value = {
-    paymentId: payment.paymentId,
-    amount: payment.amount,
-    type: payment.type,
-  };
-  showEditDialog.value = true;
-};
+// const editPatient = (patient) => {
+//   console.log('تعديل:', patient);
+//   // هنا تفتح Dialog أو صفحة تعديل
+// };
 
-const updatePayment = async () => {
-  try {
-    await _put(`/api/Payments/${editPaymentData.value.paymentId}`, {
-      amount: editPaymentData.value.amount,
-      type: editPaymentData.value.type,
-    });
 
-    alert("تم تعديل الدفعة بنجاح ✅");
-    showEditDialog.value = false;
-    fetchPayments();
-  } catch (error) {
-    console.error(error);
-    alert("فشل تعديل الدفعة ❌");
-  }
-};
-const deletePayment = async (payment) => {
-  const confirmed = confirm(
-    `هل أنت متأكد من حذف دفعة بقيمة ${payment.amount}؟`
-  );
+const deleteExpense = async (expense) => {
+  const confirmed = confirm(`هل أنت متأكد من حذف ${expense.expenseTypeName}؟`);
   if (!confirmed) return;
 
   try {
-    const res = await _delete(`/api/Payments/${payment.paymentId}`);
-
+        const res = await _delete(`/api/Expenses/${expense.expenseId}`);
     if (res.status === 200 || res.status === 204) {
-      alert("تم حذف الدفعة بنجاح ✅");
-      fetchPayments();
+      alert("تم حذف المصروف بنجاح ✅");
+      fetchExpenses();
     } else {
-      alert("فشل حذف الدفعة ❌");
+      console.error("خطأ من السيرفر:", res.data);
+      alert(`فشل حذف المصروف ❌\n${res.data?.message || 'حدث خطأ غير معروف'}`);
     }
   } catch (error) {
-    console.error("خطأ أثناء الحذف:", error);
-    alert("فشل حذف الدفعة ❌");
+    console.error("حدث خطأ أثناء الحذف:", error);
+    alert("فشل حذف الاجراء ❌");
   }
 };
 
-// function handleProcedureAdded() {
-//   showDialogAdd.value = false;
-//   fetchProcedures(); // لتحديث الجدول بعد الإضافة
-// }
-const formattedPayments = computed(() =>
-  Payments.value.map((p) => ({
-    ...p,
-    paymentDate: new Date(p.paymentDate).toLocaleDateString("en-GB"),
-  }))
-);
+function handleExpenseAdded() {
+  showDialogAdd.value = false;
+  fetchExpenses(); // لتحديث الجدول بعد الإضافة
+}
 
 onMounted(() => {
-  fetchPayments();
+  fetchExpenses();
 });
 </script>
 
 <style scoped>
 /* الحاوية الرئيسية */
-.payment-container {
+.doctors-container {
  background-color: var(--color-gray-100);
   font-family: var(--font-primary);
 }
@@ -268,7 +225,7 @@ onMounted(() => {
 }
 
 .title-icon {
- background-color: var(--color-primary-700);
+  background-color: var(--color-primary-700);
   border-radius: 12px;
   padding: 12px;
   box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
@@ -279,16 +236,15 @@ onMounted(() => {
   height: 24px;
   color: white;
 }
-
 .page-title {
-   font-size: 28px;
+  font-size: 28px;
   font-weight: bold;
   color: var(--color-primary-900);
 }
 
 /* زر الإضافة */
 .add-btn {
- background-color: var(--color-primary-700);
+  background-color: var(--color-primary-700);
   color: var(--color-white);
   border: none;
   border-radius: 12px;
@@ -312,10 +268,8 @@ onMounted(() => {
   width: 18px;
   height: 18px;
 }
-
 /* المحتوى الرئيسي */
 .main-content {
-  /* max-width: 1200px; */
   margin: 0 auto;
   padding: 15px;
 }
@@ -341,18 +295,15 @@ onMounted(() => {
   min-width: 80px;
   justify-content: center;
 }
-
 .edit-btn {
   background: var(--color-primary-700);
   color: white;
   box-shadow: var(--color-primary-900);
 }
-
 .edit-btn:hover {
   background: var(--color-primary-900);
   transform: translateY(-1px);
 }
-
 .delete-btn {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
@@ -434,30 +385,30 @@ onMounted(() => {
     text-align: center;
     gap: 16px;
   }
-
+  
   .main-content {
     padding: 16px;
   }
-
+  
   .page-title {
     font-size: 24px;
   }
-
+  
   .add-btn {
     padding: 10px 16px;
     font-size: 13px;
   }
-
+  
   .stat-card {
     max-width: 100%;
   }
-
+  
   .action-btn {
     padding: 6px 10px;
     font-size: 12px;
     min-width: 70px;
   }
-
+  
   .pagination-section {
     flex-direction: column;
     gap: 12px;

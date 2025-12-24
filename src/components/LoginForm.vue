@@ -1,105 +1,65 @@
 <template>
-  <div
-    class="login-container"
-    dir="rtl"
-  >
-    <div
-      class="login-card"
-    >
+  <div class="login-container" dir="rtl">
+    <div class="login-card">
       <div class="header-section">
         <!-- أيقونة الأسنان -->
         <div class="icon-container">
-          <svg class="tooth-icon" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C9.79 2 8 3.79 8 6v4c0 1.1.9 2 2 2s2-.9 2-2V6c0-.55.45-1 1-1s1 .45 1 1v4c0 1.1.9 2 2 2s2-.9 2-2V6c0-2.21-1.79-4-4-4zm0 18c2.21 0 4-1.79 4-4v-4c0-1.1-.9-2-2-2s-2 .9-2 2v4c0 .55-.45 1-1 1s-1-.45-1-1v-4c0-1.1-.9-2-2-2s-2 .9-2 2v4c0 2.21 1.79 4 4 4z"/>
-          </svg>
+          <i class="fa-solid fa-tooth tooth-icon"></i>
         </div>
-        <h1 class="main-title">مركز الأسنان</h1>
-        <p class="subtitle">نظام إدارة العيادة</p>
+        <h1 class="main-title bg-">مركز الأسنان</h1>
       </div>
-
       <div class="form-section">
-        <!-- البريد الإلكتروني -->
+        <!-- اسم المستخدم -->
         <div class="input-group">
-          <div class="input-icon-left">
-            <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-            </svg>
+          <label class="input-label">البريد الالكتروني</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-envelope icon"></i>
+
+            <input
+              type="email"
+              v-model="user.email"
+              placeholder="example@email.com"
+              class="input-field"
+              autocomplete="new-password"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+            />
           </div>
-          <input
-            type="email"
-            placeholder="البريد الإلكتروني"
-            v-model="user.email"
-            class="input-field-with-left-icon"
-          />
         </div>
 
         <!-- كلمة المرور -->
         <div class="input-group">
-          <div class="input-icon-left">
-            <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
-            </svg>
-          </div>
-          <input
-            :type="typePassword"
-            placeholder="كلمة المرور"
-            v-model="user.password"
-            class="input-field-with-left-icon"
-          />
+          <label class="input-label">كلمة المرور</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-lock icon"></i>
 
-          <!-- خيار عرض كلمة المرور -->
-          <div class="checkbox-container">
             <input
-              type="checkbox"
-              id="showPassword"
-              v-model="isShow"
-              @change="toggleShow"
-              class="checkbox-input"
+              :type="typePassword"
+              v-model="user.password"
+              placeholder="••••••••"
+              class="input-field"
             />
-            <label
-              for="showPassword"
-              class="checkbox-label"
-            >
-              عرض كلمة المرور
-            </label>
+          </div>
+
+          <div class="checkbox-container">
+            <input type="checkbox" v-model="isShow" @change="toggleShow" />
+            <span>إظهار كلمة المرور</span>
           </div>
         </div>
 
-        <!-- زر تسجيل الدخول -->
+        <!-- زر الدخول -->
         <button @click="loginApi(user)" :disabled="loading" class="btn-primary">
-          <span v-if="!loading" class="btn-content">
-            <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-            </svg>
-            تسجيل الدخول
-          </span>
-          <div v-else class="loading-content">
-            <svg class="loading-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            جاري التحميل...
-          </div>
+          {{ loading ? "جاري الدخول..." : "تسجيل الدخول" }}
         </button>
       </div>
 
       <div class="footer-section">
         <p class="forgot-password-text">هل نسيت كلمة المرور؟</p>
-        <a href="#" class="forgot-password-link">
-          استعادة كلمة المرور
-        </a>
-      </div>
-
-      <!-- معلومات إضافية -->
-      <div class="copyright-section">
-        <p class="copyright-text">
-          © 2024 مركز الأسنان - جميع الحقوق محفوظة
-        </p>
+        <a href="#" class="forgot-password-link"> استعادة كلمة المرور </a>
       </div>
     </div>
   </div>
-   
 </template>
 
 <script setup>
@@ -155,28 +115,34 @@ const loginApi = async (obj) => {
 </script>
 
 <style scoped>
-/* الحاوية الرئيسية */
+  /* ===============================
+   الحاوية الرئيسية
+================================ */
 .login-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(to bottom right, #1e40af, #3b82f6);
+  background: linear-gradient(135deg, var(--color-gray-100), #e6f6fe);
+  font-family: var(--font-primary);
 }
 
-/* بطاقة تسجيل الدخول */
+/* ===============================
+   بطاقة تسجيل الدخول
+================================ */
 .login-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  padding: 32px;
+  background: var(--color-white);
+  border-radius: 20px;
+  padding: 40px 36px;
   width: 100%;
-  max-width: 384px;
-  border-top: 4px solid #0ea5e9;
-  animation: fadeIn 0.6s ease-in-out;
+  max-width: 420px;
+  box-shadow: 0 15px 40px rgba(15, 23, 42, 0.1);
+  animation: cardEnter 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
 }
 
-/* قسم الهيدر */
+/* ===============================
+   الهيدر
+================================ */
 .header-section {
   display: flex;
   flex-direction: column;
@@ -184,251 +150,214 @@ const loginApi = async (obj) => {
   margin-bottom: 32px;
 }
 
-/* حاوية الأيقونة */
 .icon-container {
-  background: linear-gradient(to right, #0ea5e9, #3b82f6);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-700),
+    var(--color-secondary-500)
+  );
   border-radius: 50%;
-  padding: 16px;
+  padding: 18px;
   margin-bottom: 16px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.35);
 }
 
 /* أيقونة الأسنان */
 .tooth-icon {
-  width: 48px;
-  height: 48px;
+  font-size: 46px;
   color: white;
+  animation: toothPop 0.9s ease-out forwards;
 }
 
-/* العنوان الرئيسي */
 .main-title {
-  font-size: 30px;
-  font-weight: bold;
-  color: #1e40af;
-  margin-bottom: 8px;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-primary-900);
   margin: 0;
 }
 
-/* العنوان الفرعي */
-.subtitle {
-  color: #6b7280;
-  font-size: 14px;
-  margin: 0;
-}
-
-/* قسم النموذج */
+/* ===============================
+   الفورم
+================================ */
 .form-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 /* مجموعة الإدخال */
 .input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0;
+  animation: inputFade 0.6s ease forwards;
+}
+
+.input-group:nth-child(1) { animation-delay: 0.2s; }
+.input-group:nth-child(2) { animation-delay: 0.35s; }
+
+/* Label */
+.input-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-gray-500);
+}
+
+/* Wrapper */
+.input-wrapper {
   position: relative;
 }
 
-/* أيقونة الإدخال */
-.input-icon {
+/* الأيقونة داخل الحقل */
+.input-wrapper .icon {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  padding-right: 12px;
-  display: flex;
-  align-items: center;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--color-primary-500);
   pointer-events: none;
-  z-index: 1;
-}
-
-/* أيقونة الإدخال - يسار */
-.input-icon-left {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 10px;
-  padding-left: 12px;
-  display: flex;
-  align-items: center;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* الأيقونة */
-.icon {
-  width: 20px;
-  height: 20px;
-  color: #1e40af;
 }
 
 /* حقل الإدخال */
 .input-field {
   width: 100%;
-  border: 2px solid #e5e7eb;
+  padding: 13px 14px 13px 44px;
   border-radius: 12px;
-  padding: 12px 16px 12px 44px;
+  border: 1px solid var(--color-gray-100);
+  background: var(--color-gray-100);
   font-size: 15px;
-  outline: none;
-  transition: all 0.3s ease;
-  color: #374151;
-  background-color: #f9fafb;
+  color: var(--color-primary-900);
+  transition: all 0.25s ease;
   box-sizing: border-box;
 }
 
-/* حقل الإدخال مع أيقونة يسار */
-.input-field-with-left-icon {
-  width: 100%;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 12px 44px 12px 16px;
-  font-size: 15px;
-  outline: none;
-  transition: all 0.3s ease;
-  color: #374151;
-  background-color: #f9fafb;
-  box-sizing: border-box;
+.input-field::placeholder {
+  color: #94a3b8;
+  font-size: 14px;
 }
 
 .input-field:focus {
-  border-color: #1e40af;
-  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
-  background-color: white;
+  outline: none;
+  background: var(--color-white);
+  border-color: var(--color-secondary-500);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
 }
 
-.input-field-with-left-icon:focus {
-  border-color: #1e40af;
-  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
-  background-color: white;
-}
-
-/* حاوية خانة الاختيار */
+/* ===============================
+   checkbox
+================================ */
 .checkbox-container {
   display: flex;
   align-items: center;
-  margin-top: 12px;
   gap: 8px;
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--color-gray-500);
 }
 
-/* خانة الاختيار */
-.checkbox-input {
-  cursor: pointer;
-  accent-color: #1e40af;
+.checkbox-container input {
   width: 16px;
   height: 16px;
-}
-
-/* تسمية خانة الاختيار */
-.checkbox-label {
-  font-size: 14px;
-  color: #6b7280;
   cursor: pointer;
-  user-select: none;
+  accent-color: var(--color-secondary-500);
 }
 
-/* الزر الرئيسي */
+/* ===============================
+   زر الدخول
+================================ */
 .btn-primary {
+  margin-top: 10px;
   width: 100%;
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-  color: white;
-  padding: 14px 20px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 16px;
-  transition: all 0.3s ease;
+  padding: 14px;
+  border-radius: 14px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 14px 0 rgba(30, 64, 175, 0.3);
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-700),
+    var(--color-secondary-500)
+  );
+  box-shadow: 0 8px 20px rgba(30, 41, 59, 0.25);
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: inputFade 0.6s ease forwards;
+  animation-delay: 0.5s;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px 0 rgba(30, 64, 175, 0.4);
+  box-shadow: 0 12px 28px rgba(30, 41, 59, 0.35);
 }
 
 .btn-primary:disabled {
   opacity: 0.7;
   cursor: not-allowed;
-  transform: none;
 }
 
-/* محتوى الزر */
-.btn-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-/* أيقونة الزر */
-.btn-icon {
-  width: 20px;
-  height: 20px;
-}
-
-/* محتوى التحميل */
-.loading-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-/* سبينر التحميل */
-.loading-spinner {
-  animation: spin 1s linear infinite;
-  width: 20px;
-  height: 20px;
-  color: white;
-}
-
-/* قسم التذييل */
+/* ===============================
+   الفوتر
+================================ */
 .footer-section {
+  margin-top: 26px;
+  padding-top: 18px;
   text-align: center;
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-gray-100);
 }
 
-/* نص نسيان كلمة المرور */
 .forgot-password-text {
   font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 8px;
-  margin: 0 0 8px 0;
+  color: var(--color-gray-500);
+  margin-bottom: 6px;
 }
 
-/* رابط نسيان كلمة المرور */
 .forgot-password-link {
-  color: #1e40af;
-  font-weight: 600;
   font-size: 14px;
+  font-weight: 600;
+  color: var(--color-secondary-500);
   text-decoration: none;
-  transition: color 0.2s ease;
 }
 
 .forgot-password-link:hover {
-  color: #3b82f6;
+  text-decoration: underline;
 }
 
-/* قسم حقوق الطبع */
-.copyright-section {
-  margin-top: 24px;
-  text-align: center;
+/* ===============================
+   Animations
+================================ */
+@keyframes cardEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-/* نص حقوق الطبع */
-.copyright-text {
-  font-size: 12px;
-  color: #9ca3af;
-  margin: 0;
+@keyframes toothPop {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1) rotate(10deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
 }
 
-/* الأنيميشن */
-@keyframes fadeIn {
+@keyframes inputFade {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -436,12 +365,4 @@ const loginApi = async (obj) => {
   }
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 </style>

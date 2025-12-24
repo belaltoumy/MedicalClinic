@@ -13,7 +13,7 @@
       :class="{ 'label-float': isFocused || inputValue }"
       for="dateInput"
     >
-      {{ lable }}
+      {{ label }}
     </label>
   </div>
 </template>
@@ -22,7 +22,7 @@
 import { ref, defineProps, defineEmits, watch } from "vue";
 
 const props = defineProps({
-  lable: String,
+  label: String,
   modelValue: String,
 });
 

@@ -13,7 +13,7 @@
         </button>
 
         <!-- العنوان -->
-        <h2 v-if="title" class="text-2xl font-bold mb-6 text-center text-[#054239]">
+        <h2 v-if="title" class="text-2xl font-bold mb-6 text-center text-[var(--color-primary-700)]">
           {{ title }}
         </h2>
 
@@ -59,9 +59,6 @@ const close = () => {
   animation: slideIn 0.3s ease;
 }
 
-/* --------------------- */
-/*   تصميم الديالوج      */
-/* --------------------- */
 .dialog {
   direction: rtl;
   position: fixed;
@@ -84,7 +81,7 @@ const close = () => {
   background: white;
   padding: 20px;
   border-radius: 12px;
-  width: 50%;
+  width: 30%;
   max-width: 95vw;
   max-height: 90vh;
   overflow-y: auto;

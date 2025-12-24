@@ -28,6 +28,12 @@
         ادارة المرضى
       </router-link>
     </li>
+    <li>
+      <router-link to="/payments" class="nav-link">
+        <i class="fas fa-chalkboard-teacher icon"></i>
+        ادارة الدفعات
+      </router-link>
+    </li>
 
     <li>
       <router-link to="/visites" class="nav-link">
@@ -42,7 +48,18 @@
         ادارة الاجراءات
       </router-link>
     </li>
-    
+    <li>
+      <router-link to="/expenses" class="nav-link">
+        <i class="fas fa-clipboard-check icon"></i>
+        ادارة المصاريف
+      </router-link>
+    </li>
+    <li>
+      <router-link to="/accessibility" class="nav-link">
+        <i class="fas fa-clipboard-check icon"></i>
+        ادارة الصلاحيات
+      </router-link>
+    </li>
   </ul>
 </template>
 

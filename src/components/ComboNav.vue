@@ -1,6 +1,6 @@
 <template>
   <header
-    class="bg-[#054239] text-white shadow-md w-full fixed top-0 z-60 h-[80px]"
+    class="bg-[var(--color-primary-900)] text-[var(--color-accent-500)] shadow-md w-full fixed top-0 z-60 h-[70px]"
   >
     <nav
       class="max-w-screen-xl mx-auto px-6 h-full flex justify-between items-center"

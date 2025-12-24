@@ -1,23 +1,13 @@
 <template>
   <div class="add-user-form">
-    <div class="form-header">
-      <div class="form-icon">
-        <svg fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-        </svg>
-      </div>
-      <p class="form-description">املأ المعلومات أدناه لإضافة مستخدم جديد للنظام</p>
-    </div>
-
     <div class="form-grid">
       <div class="form-row">
-        <inputText lable="الاسم الأول" v-model="newUser.firstName" />
-        <inputText lable="الكنية" v-model="newUser.lastName" />
-      </div>
-      
-      <inputText lable="البريد الإلكتروني" v-model="newUser.email" />
-      <inputText lable="اسم المستخدم" v-model="newUser.userName" />
-      <inputText lable="كلمة المرور" v-model="newUser.password" type="password" />
+        <inputText label="الاسم الأول" v-model="newUser.firstName" />
+        <inputText label="الكنية" v-model="newUser.lastName" />
+      </div>      
+      <inputText label="البريد الإلكتروني" v-model="newUser.email" />
+      <inputText label="اسم المستخدم" v-model="newUser.userName" />
+      <inputText label="كلمة المرور" v-model="newUser.password" type="password" />
     </div>
 
     <!-- زر الحفظ -->
@@ -30,9 +20,6 @@
         <svg v-if="isLoading" class="loading-icon" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
           <path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <svg v-else class="save-icon" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
         </svg>
         {{ isLoading ? 'جاري الحفظ...' : 'حفظ المستخدم' }}
       </button>
@@ -108,49 +95,24 @@ const addNewUser = async () => {
 <style scoped>
 /* حاوية النموذج */
 .add-user-form {
-  padding: 20px;
+  padding: 24px;
   max-width: 600px;
   margin: 0 auto;
-}
-
-/* رأس النموذج */
-.form-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.form-icon {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, #1e40af, #3b82f6);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px;
-  color: white;
-  box-shadow: 0 8px 20px rgba(30, 64, 175, 0.3);
-}
-
-.form-icon svg {
-  width: 32px;
-  height: 32px;
-}
-
-.form-description {
-  color: #6b7280;
-  font-size: 14px;
-  margin: 0;
-  line-height: 1.5;
+  background: var(--color-white);
+  border-radius: 16px;
+  border-top: 4px solid var(--color-primary-700);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  font-family: var(--font-primary);
 }
 
 /* شبكة النموذج */
 .form-grid {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 }
 
+/* صف مزدوج */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -159,18 +121,16 @@ const addNewUser = async () => {
 
 /* الإجراءات */
 .form-actions {
-  margin-top: 32px;
+  margin-top: 15px;
   display: flex;
   justify-content: center;
 }
-
-/* زر الحفظ */
 .save-btn {
-  background: linear-gradient(135deg, #10b981, #059669);
   color: white;
+  background: var(--color-primary-700);
   border: none;
-  border-radius: 12px;
-  padding: 14px 32px;
+  border-radius: 14px;
+  padding: 14px 34px;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
@@ -178,34 +138,31 @@ const addNewUser = async () => {
   display: flex;
   align-items: center;
   gap: 10px;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-  min-width: 180px;
+  min-width: 190px;
   justify-content: center;
+  box-shadow: 0 8px 22px rgba(184, 165, 122, 0.35);
 }
-
-.save-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #059669, #047857);
+.save-btn:hover {
+  background: var(--color-primary-900);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
-
+/* Disabled */
 .save-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
-
-/* أيقونات الزر */
-.save-icon, .loading-icon {
+.save-icon,
+.loading-icon {
   width: 18px;
   height: 18px;
+  color: var(--color-primary-900);
 }
 
 .loading-icon {
   animation: spin 1s linear infinite;
 }
 
-/* أنيميشن الدوران */
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -215,51 +172,30 @@ const addNewUser = async () => {
   }
 }
 
-/* تحسينات للشاشات الصغيرة */
 @media (max-width: 768px) {
   .add-user-form {
     padding: 16px;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  
-  .form-header {
-    margin-bottom: 24px;
-  }
-  
-  .form-icon {
-    width: 56px;
-    height: 56px;
-    margin-bottom: 12px;
-  }
-  
-  .form-icon svg {
-    width: 28px;
-    height: 28px;
-  }
-  
+
   .save-btn {
     padding: 12px 24px;
     font-size: 14px;
     min-width: 160px;
   }
-  
+
   .form-actions {
     margin-top: 24px;
   }
 }
 
-/* تحسين التفاعل */
+/* Active click */
 .save-btn:active {
   transform: translateY(0);
 }
 
-/* تأثير التركيز */
-.save-btn:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
-}
 </style>

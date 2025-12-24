@@ -1,17 +1,22 @@
 <template>
   <div class="input-wrapper">
-    <input
-      type="number"
-      id="user"
-      v-model="inputValue"
-      @focus="isFocused = true"
-      @blur="isFocused = inputValue.toString().length > 0"
-      @input="emit('update:modelValue', inputValue)"
-      inputmode="numeric"
-    />
-    <label :class="{ 'label-float': isFocused || inputValue.toString().length > 0 }" for="user">
-      {{ label }}
-    </label>
+   <input
+  type="number"
+  v-model="inputValue"
+  @focus="isFocused = true"
+  @blur="handleBlur"
+  @input="emit('update:modelValue', inputValue)"
+  inputmode="numeric"
+/>
+   <label
+  :class="{
+    'label-float':
+      isFocused ||
+      (inputValue !== null && inputValue !== '' && inputValue !== undefined)
+  }"
+>
+  {{ label }}
+</label>
   </div>
 </template>
 
@@ -28,7 +33,12 @@ const props = defineProps({
     default: "",
   },
 });
-
+const handleBlur = () => {
+  isFocused.value =
+    inputValue.value !== null &&
+    inputValue.value !== "" &&
+    inputValue.value !== undefined;
+};
 const emit = defineEmits(["update:modelValue"]);
 
 const isFocused = ref(false);

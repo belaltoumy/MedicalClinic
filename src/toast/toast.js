@@ -6,7 +6,7 @@ const useToast = () => {
     toast(message, {
       theme: "auto",
       type: type,
-      position: "bottom-center",
+      position: "bottom-left",
       pauseOnFocusLoss: false,
       dangerouslyHTMLString: true,
       autoClose : 3000,

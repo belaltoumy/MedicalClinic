@@ -1,1 +1,40 @@
 @import "tailwindcss";
+
+/* 🎨 Tailwind v4 Theme Tokens */
+@theme {
+  /* Fonts */
+
+  --font-primary: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  --font-secondary: 'Tajawal', sans-serif;
+
+  /* Primary */
+  --color-primary-900: #0F172A;
+  --color-primary-700: #1E293B;
+  --color-primary-500: #334155;
+
+  /* Secondary */
+  --color-secondary-500: #38BDF8;
+  --color-secondary-300: #7DD3FC;
+
+  /* Accent */
+  --color-accent-500: #b8a57a;
+
+  /* Neutral */
+  --color-white: #FFFFFF;
+  --color-gray-100: #F1F5F9;
+  --color-gray-500: #64748B;
+}
+/* الخط الافتراضي للموقع */
+body {
+  font-family: var(--font-primary);
+}
+
+@layer utilities {
+  .font-primary {
+    font-family: var(--font-primary);
+  }
+
+  .font-secondary {
+    font-family: var(--font-secondary);
+  }
+}

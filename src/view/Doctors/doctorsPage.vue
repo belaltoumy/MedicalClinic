@@ -1,4 +1,5 @@
 <template>
+  <Dashboard>
   <div class="doctors-container" dir="rtl">
     <!-- الهيدر -->
     <header class="page-header">
@@ -11,7 +12,6 @@
           </div>
           <div class="title-text">
             <h1 class="page-title">إدارة الأطباء</h1>
-            <p class="page-subtitle">إضافة وتعديل وحذف الأطباء في العيادة</p>
           </div>
         </div>
         
@@ -92,20 +92,24 @@
         </button>
       </div>
     </main>
-
     <!-- نافذة الإضافة -->
-    <compoDialog v-model="showDialogAdd" title="إضافة طبيب جديد">
+    <compoAddDialog v-model="showDialogAdd" title="إضافة طبيب جديد">
       <AddNewDoctor @saved="handleUserAdded" />
-    </compoDialog>
+    </compoAddDialog>
   </div>
+  </Dashboard>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import compoTable from '../components/compoTable.vue';
-import compoDialog from '../components/compoDialog.vue';
-import AddNewDoctor from '../components/addNewDoctor.vue';
-import { _get ,_delete } from '../api/axois';
+import compoTable from '../../components/compoTable.vue';
+import compoAddDialog from '../../components/compoAddDialog.vue';
+import Dashboard from '../../components/dashboard.vue';
+
+import AddNewDoctor from './addNewDoctor.vue';
+
+import { _get, _delete } from '../../api/axois';
+
 const doctors = ref([]);
 const loading = ref(false);
 
@@ -193,22 +197,21 @@ onMounted(() => {
 <style scoped>
 /* الحاوية الرئيسية */
 .doctors-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+min-height: 100vh;
+  background-color: var(--color-gray-100);
+  font-family: var(--font-primary);
 }
 
 /* هيدر الصفحة */
 .page-header {
-  background: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border-bottom: 3px solid #8b5cf6;
+  background-color: var(--color-white);
+  border-bottom: 3px solid var(--color-accent-500);
 }
 
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -223,10 +226,10 @@ onMounted(() => {
 }
 
 .title-icon {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+ background-color: var(--color-primary-700);
   border-radius: 12px;
   padding: 12px;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
 }
 
 .title-icon svg {
@@ -234,24 +237,17 @@ onMounted(() => {
   height: 24px;
   color: white;
 }
-
 .page-title {
   font-size: 28px;
   font-weight: bold;
-  color: #8b5cf6;
-  margin: 0 0 4px 0;
+  color: var(--color-primary-900);
 }
 
-.page-subtitle {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0;
-}
 
 /* زر الإضافة */
 .add-btn {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
+   background-color: var(--color-primary-700);
+  color: var(--color-white);
   border: none;
   border-radius: 12px;
   padding: 12px 20px;
@@ -262,13 +258,12 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .add-btn:hover {
-  background: linear-gradient(135deg, #059669, #047857);
+  background-color: var(--color-primary-900);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  box-shadow: var(--color-primary-700);
 }
 
 .btn-icon {
@@ -278,64 +273,8 @@ onMounted(() => {
 
 /* المحتوى الرئيسي */
 .main-content {
-  max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
-}
-
-/* صف الإحصائيات */
-.stats-row {
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #f1f5f9;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  max-width: 300px;
-  transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-.stat-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.doctors-icon {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-}
-
-.stat-icon svg {
-  width: 28px;
-  height: 28px;
-}
-
-.stat-number {
-  font-size: 28px;
-  font-weight: bold;
-  color: #1f2937;
-  margin: 0 0 4px 0;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0;
+  padding: 15px;
 }
 
 /* قسم الجدول */
@@ -361,15 +300,14 @@ onMounted(() => {
 }
 
 .edit-btn {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background: var(--color-primary-700);
   color: white;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  box-shadow: var(--color-primary-900);
 }
 
 .edit-btn:hover {
-  background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+  background: var(--color-primary-900);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .delete-btn {
@@ -467,9 +405,6 @@ onMounted(() => {
     font-size: 13px;
   }
   
-  .stat-card {
-    max-width: 100%;
-  }
   
   .action-btn {
     padding: 6px 10px;

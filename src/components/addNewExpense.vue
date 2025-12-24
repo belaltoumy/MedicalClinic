@@ -1,76 +1,131 @@
 <template>
-  <div class="add-procedure-form">
+  <div class="add-expense-form">
+   
     <div class="form-grid">
       <div class="form-row">
-        <inputText label="اسم الإجراء" v-model="newProcedure.name" />
-        <inputNumber label="التكلفة الافتراضية" v-model="newProcedure.defaultCost" />
+        <inputSelect
+  label="نوع المصروف"
+  v-model="newExpense.expenseTypeId"
+>
+  <option
+    v-for="type in typesExpenses"
+    :key="type.expenseTypeId"
+    :value="type.expenseTypeId"
+  >
+    {{ type.typeName }}
+  </option>
+</inputSelect>
+
+<inputSelect
+  label="البريد الالكتروني "
+  v-model="newExpense.userId"
+>
+  <option
+    v-for="user in users"
+    :key="user.id"
+    :value="user.id"
+  >
+    {{ user.userName }}
+  </option>
+</inputSelect>
+
+        <inputText label="وصف المصروف" v-model="newExpense.description" />
+        <inputNumber label="المبلغ" v-model="newExpense.amount" />
       </div>
     </div>
-
     <!-- زر الحفظ -->
     <div class="form-actions">
       <button
-        @click="addNewProcedure"
+        @click="addNewExpense"
         class="save-btn"
-        :disabled="isLoading"
+        :disabled="LoadingSave"
       >
-        <svg v-if="isLoading" class="loading-icon" viewBox="0 0 24 24">
+        <svg v-if="LoadingSave" class="loading-icon" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
           <path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        <svg v-else class="save-icon" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-        </svg>
-        {{ isLoading ? 'جاري الحفظ...' : 'حفظ الإجراء' }}
+        {{ LoadingSave ? 'جاري الحفظ...' : 'حفظ الإجراء' }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
+import { onMounted } from "vue";  
 import inputText from "./inputText.vue";
 import inputNumber from "./inputNumber.vue";
+import inputSelect from "./InputSelect.vue";
 import { ref } from "vue";
-import { _post } from "../api/axois";
+import { _post, _get } from "../api/axois";
 
 const emit = defineEmits(["saved"]);
 
 const isLoading = ref(false);
+const LoadingSave = ref(false);
 
-const newProcedure = ref({
-  name: "",
-  defaultCost: null,
+const typesExpenses = ref([]);
+const users = ref([]);
 
+const newExpense = ref({
+  description: "",
+  amount: null,
+  expenseTypeId: "",
+  userId: "",
 });
 
+const fetchUsers = async () => {
+  try {
+    isLoading.value = true;
+    const res = await _get("/api/Auth/getAllUsers");
+    users.value = res.data;
+  } catch (error) {
+    console.error("حدث خطأ أثناء جلب المستخدمين:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const fetchTypeExpense = async () => {
+  try {
+    isLoading.value = true;
+    const res = await _get("/api/Expenses/getAllExpenseType");
+    typesExpenses.value = res.data;
+  } catch (error) {
+    console.error("حدث خطأ أثناء جلب أنواع المصروفات:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
 // ✅ دالة الإضافة
-const addNewProcedure = async () => {
+const addNewExpense = async () => {
   // التحقق من أن جميع الحقول ممتلئة
   if (
-    !newProcedure.value.name ||
-    newProcedure.value.defaultCost <= 0
+    !newExpense.value.description ||
+    newExpense.value.amount <= 0 ||
+    !newExpense.value.expenseTypeId ||
+    !newExpense.value.userId
   ) {
     alert("الرجاء تعبئة جميع الحقول");
     return;
   }
-
   try {
-    isLoading.value = true;
+    LoadingSave.value = true;
     const payload = {
-      name: newProcedure.value.name,
-      defaultCost: newProcedure.value.defaultCost,
-      
+      description: newExpense.value.description,
+      amount: newExpense.value.amount,
+      expenseTypeId: newExpense.value.expenseTypeId,
+      userId: newExpense.value.userId
     };
-
-    const res = await _post("/api/Procedures", payload);
+    const res = await _post("/api/Expenses", payload);
     console.log("تمت الإضافة:", res.data);
-
-    alert("✅ تمت إضافة الإجراء بنجاح");
+    alert("✅ تمت إضافة المصروف بنجاح");
     
     // إعادة تعيين النموذج
-    newProcedure.value = {
-      name: "",
-      defaultCost: 0,
+    newExpense.value = {
+      description: "",
+      amount: 0,
+      expenseTypeId: "",
+      userId: "",
     };
     
     emit("saved"); // لإخبار الصفحة الأب بأن الإضافة تمت
@@ -78,17 +133,22 @@ const addNewProcedure = async () => {
     console.error("حدث خطأ أثناء الإضافة:", error);
     alert("❌ حدث خطأ أثناء الإضافة");
   } finally {
-    isLoading.value = false;
+    LoadingSave.value = false;
   }
 };
+
+onMounted(() => {
+  fetchUsers();
+  fetchTypeExpense();
+});
 </script>
 
 <style scoped>
-.add-procedure-form {
+.add-expense-form {
   padding: 24px;
   max-width: 600px;
   margin: 0 auto;
-  background: var(--color-white);
+  background: #ffffff;
   border-radius: 16px;
   border-top: 4px solid var(--color-primary-700);
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
@@ -108,17 +168,17 @@ const addNewProcedure = async () => {
 }
 
 .form-actions {
-  margin-top: 20px;
+  margin-top: 28px;
   display: flex;
   justify-content: center;
 }
 
 .save-btn {
-  color: white;
   background: var(--color-primary-700);
+  color: #ffffff;
   border: none;
   border-radius: 14px;
-  padding: 14px 34px;
+  padding: 14px 36px;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
@@ -128,7 +188,7 @@ const addNewProcedure = async () => {
   gap: 10px;
   min-width: 190px;
   justify-content: center;
-  box-shadow: 0 8px 22px rgba(184, 165, 122, 0.35);
+  box-shadow: 0 8px 22px rgba(59, 130, 246, 0.35);
 }
 
 .save-btn:hover:not(:disabled) {
@@ -142,22 +202,12 @@ const addNewProcedure = async () => {
   transform: none;
 }
 
-/* ===============================
-   أيقونات الزر
-================================ */
-.save-icon,
 .loading-icon {
   width: 18px;
   height: 18px;
-}
-
-.loading-icon {
   animation: spin 1s linear infinite;
 }
 
-/* ===============================
-   أنيميشن
-================================ */
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -168,12 +218,11 @@ const addNewProcedure = async () => {
 }
 
 @media (max-width: 768px) {
-  .add-procedure-form {
+  .add-expense-form {
     padding: 16px;
   }
 
   .form-row {
-    grid-template-columns: 1fr;
     gap: 12px;
   }
 

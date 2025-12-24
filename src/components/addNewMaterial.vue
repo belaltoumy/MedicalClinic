@@ -1,28 +1,16 @@
 <template>
   <div class="material-form">
-    <!-- هيدر النموذج -->
-    <div class="form-header">
-      <div class="header-icon">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-        </svg>
-      </div>
-      <div>
-        <h2 class="form-title">{{ editMode ? 'تعديل المادة' : 'إضافة مادة جديدة' }}</h2>
-        <p class="form-subtitle">{{ editMode ? 'تحديث بيانات المادة' : 'إدخال بيانات المادة الجديدة' }}</p>
-      </div>
-    </div>
-
+ 
     <!-- نموذج البيانات -->
     <div class="form-content">
       <div class="input-grid">
         <inputText 
-          lable="اسم المادة" 
+          label="اسم المادة" 
           v-model="newMaterial.name" 
           :disabled="loading"
         />
         <inputText 
-          lable="الوحدة" 
+          label="الوحدة" 
           v-model="newMaterial.unit" 
           :disabled="loading"
         />
@@ -46,9 +34,7 @@
           class="save-btn"
         >
           <div v-if="loading" class="loading-spinner"></div>
-          <svg v-else class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-          </svg>
+         
           {{ loading ? 'جاري الحفظ...' : (editMode ? 'تحديث المادة' : 'إضافة المادة') }}
         </button>
       </div>
@@ -83,8 +69,8 @@ const loading = ref(false);
 const newMaterial = ref({
   name: "",
   unit: "",
-  unitPrice: 0,
-  costBearer: 0
+  unitPrice: null,
+  costBearer: null
 });
 
 // مراقبة بيانات التعديل
@@ -155,50 +141,17 @@ const addNewMaterial = async () => {
 </script>
 
 <style scoped>
-/* الحاوية الرئيسية */
+  /* الحاوية الرئيسية */
 .material-form {
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--color-white);
+  border-radius: 16px;
+  border-top: 4px solid var(--color-primary-700);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  font-family: var(--font-primary);
   direction: rtl;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* هيدر النموذج */
-.form-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #fef3c7;
-}
-
-.header-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-}
-
-.header-icon svg {
-  width: 24px;
-  height: 24px;
-}
-
-.form-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #f59e0b;
-  margin: 0 0 4px 0;
-}
-
-.form-subtitle {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0;
 }
 
 /* محتوى النموذج */
@@ -206,59 +159,64 @@ const addNewMaterial = async () => {
   padding: 0;
 }
 
+/* شبكة الحقول */
 .input-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.input-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 /* أزرار الإجراءات */
 .form-actions {
+  margin-top: 20px;
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid #f1f5f9;
 }
 
+/* زر الحفظ */
 .save-btn {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
   color: white;
+  background: var(--color-primary-700);
   border: none;
-  border-radius: 12px;
-  padding: 12px 24px;
+  border-radius: 14px;
+  padding: 14px 34px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-width: 140px;
+  gap: 10px;
+  min-width: 190px;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 8px 22px rgba(184, 165, 122, 0.35);
 }
 
 .save-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #d97706, #b45309);
+  background: var(--color-primary-900);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
 }
 
+/* Disabled */
 .save-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
 
+/* أيقونة الزر */
 .btn-icon {
   width: 18px;
   height: 18px;
 }
 
-/* مؤشر التحميل */
+/* Spinner */
 .loading-spinner {
   width: 18px;
   height: 18px;
@@ -268,33 +226,31 @@ const addNewMaterial = async () => {
   animation: spin 0.8s linear infinite;
 }
 
-/* أنيميشن التحميل */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* تحسينات للشاشات الصغيرة */
+/* Responsive */
 @media (max-width: 768px) {
+  .material-form {
+    padding: 16px;
+  }
+
   .input-grid {
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  
-  .form-header {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
-  }
-  
-  .form-title {
-    font-size: 18px;
-  }
-  
+
   .save-btn {
-    padding: 10px 20px;
-    font-size: 13px;
-    min-width: 120px;
+    padding: 12px 24px;
+    font-size: 14px;
+    min-width: 160px;
+  }
+
+  .form-actions {
+    margin-top: 24px;
   }
 }
+
 </style>

@@ -1,10 +1,10 @@
 <template>
-  <div dir="rtl" class="relative min-h-screen bg-gray-100 flex type-font">
+  <div dir="rtl" class="relative min-h-screen bg-gray-100 flex">
     <ComboNav />
     <i
       @click="toggleSidebar"
       :class="[isSidebarOpen ? 'fas fa-xmark' : 'fas fa-bars']"
-      class="fixed top-7 right-6 z-60 text-white text-2xl cursor-pointer hover:scale-110 transition-transform duration-300"
+      class="fixed top-7 right-6 z-60 text-[var(--color-accent-500)] text-2xl cursor-pointer hover:scale-110 transition-transform duration-300"
       title="عرض/إخفاء القائمة الجانبية"
     ></i>
  
@@ -12,8 +12,10 @@
     <transition name="slide">
       <aside
         v-if="isSidebarOpen"
-        class="w-full sm:w-80 bg-[#054239] shadow-lg p-4 z-40 fixed top-0 right-0 h-full"
-        style="min-width: 320px"
+ class="w-full sm:w-70 bg-[var(--color-primary-900)]
+         text-[var(--color-accent-500)]
+         shadow-lg p-4 z-40 fixed top-0 right-0 h-full"
+                 style="min-width: 260px"
       >
         <div class="pt-14">
           <Combolinkmanagement class="text-white" />
@@ -31,7 +33,7 @@
     <!-- العودة للصفحة الرئيسية -->
     <router-link
       to="/home"
-      class="fixed bottom-6 right-6 bg-[#054239] hover:bg-white hover:text-[#054239] text-white py-2 px-2 text-sm rounded-md shadow-lg flex items-center gap-2 z-50"
+      class="fixed bottom-6 right-6 bg-[var(--color-primary-900)] hover:bg-white hover:text-[var(--color-primary-900)] text-white py-2 px-2 text-sm rounded-md shadow-lg flex items-center gap-2 z-50"
     >
       <i class="fa fa-arrow-right"></i>
       الصفحة الرئيسية
@@ -53,17 +55,17 @@ import Combolinkmanagement from "./Combolinkmanagement.vue";
 const isSidebarOpen = ref(true);
 const toggleSidebar = () => (isSidebarOpen.value = !isSidebarOpen.value);
 
+const SIDEBAR_WIDTH = 260;
+
 const mainStyle = computed(() =>
   isSidebarOpen.value
-    ? "margin-right: 320px; margin-top: 64px"
+    ? `margin-right: ${SIDEBAR_WIDTH}px; margin-top: 64px`
     : "margin-right: 0; margin-top: 64px"
 );
 </script>
 
 <style scoped>
-.type-font {
-  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
-}
+
 .main-color {
   color: #054239;
 }
