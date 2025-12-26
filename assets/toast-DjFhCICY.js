@@ -1,0 +1,1 @@
+import{s as t}from"./index-B7wnLmwi.js";const n=()=>({showToast:(o,s,a={})=>{t(o,{theme:"auto",type:s,position:"bottom-left",pauseOnFocusLoss:!1,dangerouslyHTMLString:!0,autoClose:3e3})}});export{n as u};
