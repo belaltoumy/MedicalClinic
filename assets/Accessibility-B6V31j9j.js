@@ -1,0 +1,1 @@
+import{D as e}from"./dashboard-Cr3GjnYV.js";import{c as s,w as o,o as r,a}from"./index-DPFA0x5o.js";import"./dataUser-DKAt3Zv0.js";const u={__name:"Accessibility",setup(i){return(l,t)=>(r(),s(e,null,{default:o(()=>[...t[0]||(t[0]=[a("div",null,[a("h1",null," Accessibility Page ")],-1)])]),_:1}))}};export{u as default};
