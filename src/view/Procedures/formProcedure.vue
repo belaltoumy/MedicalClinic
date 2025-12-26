@@ -1,5 +1,5 @@
 <template>
-  <div class="add-procedure-form">
+  <div class="form-procedure">
     <div class="form-grid">
       <div class="form-row">
         <inputText label="اسم الإجراء" v-model="newProcedure.name" />
@@ -9,29 +9,36 @@
 
     <!-- زر الحفظ -->
     <div class="form-actions">
-      <button
-        @click="addNewProcedure"
-        class="save-btn"
-        :disabled="isLoading"
-      >
-        <svg v-if="isLoading" class="loading-icon" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
-          <path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <svg v-else class="save-icon" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-        </svg>
-        {{ isLoading ? 'جاري الحفظ...' : 'حفظ الإجراء' }}
-      </button>
+     <button
+  @click="saveProcedure"
+  class="save-btn"
+  :disabled="isLoading"
+>
+  {{ isLoading ? 'جاري الحفظ...' : (editMode ? 'تحديث الإجراء' : 'حفظ الإجراء') }}
+</button>
+
     </div>
   </div>
 </template>
 
 <script setup>
-import inputText from "./inputText.vue";
-import inputNumber from "./inputNumber.vue";
-import { ref } from "vue";
-import { _post } from "../api/axois";
+import inputText from "../../components/inputText.vue";
+import inputNumber from "../../components/inputNumber.vue";
+import { ref ,watch} from "vue";
+import { _post ,_put} from "../../api/axois.js";
+import useToast from "../../toast/toast.js";
+
+const { showToast } = useToast();
+const props = defineProps({
+  editMode: {
+    type: Boolean,
+    default: false
+  },
+  editData: {
+    type: Object,
+    default: null
+  }
+});
 
 const emit = defineEmits(["saved"]);
 
@@ -43,40 +50,54 @@ const newProcedure = ref({
 
 });
 
-// ✅ دالة الإضافة
-const addNewProcedure = async () => {
-  // التحقق من أن جميع الحقول ممتلئة
+watch(
+  () => props.editData,
+  (data) => {
+    if (data && props.editMode) {
+      newProcedure.value = {
+        procedureId: data.procedureId,
+        name: data.name,
+        defaultCost: data.defaultCost
+      };
+    }
+  },
+  { immediate: true }
+);
+const saveProcedure = async () => {
   if (
     !newProcedure.value.name ||
     newProcedure.value.defaultCost <= 0
   ) {
-    alert("الرجاء تعبئة جميع الحقول");
+    showToast("الرجاء تعبئة جميع الحقول", "error");
     return;
   }
 
+  isLoading.value = true;
+
   try {
-    isLoading.value = true;
     const payload = {
-      name: newProcedure.value.name,
-      defaultCost: newProcedure.value.defaultCost,
-      
+      name: newProcedure.value.name.trim(),
+      defaultCost: newProcedure.value.defaultCost
     };
 
-    const res = await _post("/api/Procedures", payload);
-    console.log("تمت الإضافة:", res.data);
+    if (props.editMode) {
+      await _put(
+        `/api/Procedures/${newProcedure.value.procedureId}`,
+        payload
+      );
+      showToast("تم تحديث الإجراء بنجاح ✅", "success");
+    } else {
+      await _post("/api/Procedures", payload);
+      showToast("تمت إضافة الإجراء بنجاح ✅", "success");
+    }
 
-    alert("✅ تمت إضافة الإجراء بنجاح");
-    
-    // إعادة تعيين النموذج
-    newProcedure.value = {
-      name: "",
-      defaultCost: 0,
-    };
-    
-    emit("saved"); // لإخبار الصفحة الأب بأن الإضافة تمت
+    emit("saved");
   } catch (error) {
-    console.error("حدث خطأ أثناء الإضافة:", error);
-    alert("❌ حدث خطأ أثناء الإضافة");
+    showToast(
+      error.response?.data?.title ||
+      "حدث خطأ أثناء الحفظ",
+      "error"
+    );
   } finally {
     isLoading.value = false;
   }
@@ -84,7 +105,7 @@ const addNewProcedure = async () => {
 </script>
 
 <style scoped>
-.add-procedure-form {
+.form-procedure {
   padding: 24px;
   max-width: 600px;
   margin: 0 auto;
@@ -142,9 +163,6 @@ const addNewProcedure = async () => {
   transform: none;
 }
 
-/* ===============================
-   أيقونات الزر
-================================ */
 .save-icon,
 .loading-icon {
   width: 18px;
@@ -155,9 +173,6 @@ const addNewProcedure = async () => {
   animation: spin 1s linear infinite;
 }
 
-/* ===============================
-   أنيميشن
-================================ */
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -168,7 +183,7 @@ const addNewProcedure = async () => {
 }
 
 @media (max-width: 768px) {
-  .add-procedure-form {
+  .form-procedure {
     padding: 16px;
   }
 

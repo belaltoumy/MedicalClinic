@@ -15,10 +15,8 @@
           </div>
         </div>
         
-        <button
-          @click="showDialogAdd = true"
-          class="add-btn"
-        >
+       <button @click="openAddDialog" class="add-btn">
+
           <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
           </svg>
@@ -41,10 +39,11 @@
         >
           <template #actions="{ row }">
           
-            <button
-              class="action-btn edit-btn"
-              @click="editPatient(row)"
-            >
+           <button
+  class="action-btn edit-btn"
+  @click="editProcedure(row)"
+>
+
               <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
               </svg>
@@ -94,22 +93,32 @@
       </div>
     </main>
 
-    <!-- نافذة الإضافة -->
-    <compoAddDialog v-model="showDialogAdd" title="إضافة اجراء جديد">
-        <AddNewProcedure @saved="handleProcedureAdded" />
-    </compoAddDialog>
+    <!--والتعديل نافذة الإضافة -->
+   <compoAddDialog
+  v-model="showDialogAdd"
+  :title="editMode ? 'تعديل إجراء' : 'إضافة إجراء جديد'"
+>
+  <formProcedure
+    :editMode="editMode"
+    :editData="editData"
+    @saved="handleProcedureAdded"
+  />
+</compoAddDialog>
+
   </div>
   </Dashboard>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import compoTable from '../components/compoTable.vue';
-import compoAddDialog from '../components/compoAddDialog.vue';
-import AddNewProcedure from '../components/addNewProcedure.vue';
-import { _get ,_delete } from '../api/axois';
-import Dashboard from '../components/dashboard.vue';
+import compoTable from '../../components/compoTable.vue';
+import compoAddDialog from '../../components/compoAddDialog.vue';
+import formProcedure from '../Procedures/formProcedure.vue';
+import { _get ,_delete } from '../../api/axois';
+import Dashboard from '../../components/Dashboard.vue';
+import useToast from "../../toast/toast.js";
 
+const { showToast } = useToast();
 const Procedures = ref([]);
 const loading = ref(false);
 
@@ -117,6 +126,8 @@ const pageNumber = ref(1);
 const pageSize = ref(10);
 const totalPages = ref(1);
 const showDialogAdd = ref(false);
+const editMode = ref(false);
+const editData = ref(null);
 
 const columns = [
   { key: 'name', label: 'اسم الاجراء' },
@@ -161,10 +172,18 @@ const nextPage = () => {
   }
 };
 
-// const editPatient = (patient) => {
-//   console.log('تعديل:', patient);
-//   // هنا تفتح Dialog أو صفحة تعديل
-// };
+const openAddDialog = () => {
+  editMode.value = false;
+  editData.value = null;
+  showDialogAdd.value = true;
+};
+
+const editProcedure = (procedure) => {
+  editMode.value = true;
+  editData.value = procedure;
+  showDialogAdd.value = true;
+};
+
 
 
 const deleteProcedure = async (procedure) => {
@@ -174,22 +193,21 @@ const deleteProcedure = async (procedure) => {
   try {
         const res = await _delete(`/api/Procedures/${procedure.procedureId}`);
     if (res.status === 200 || res.status === 204) {
-      alert("تم حذف الاجراء بنجاح ✅");
+      showToast("تم حذف الاجراء بنجاح ", "success");
       fetchProcedures();
     } else {
-      console.error("خطأ من السيرفر:", res.data);
-      alert(`فشل حذف الاجراء ❌\n${res.data?.message || 'حدث خطأ غير معروف'}`);
+      showToast("فشل حذف الاجراء ", "error");
     }
   } catch (error) {
-    console.error("حدث خطأ أثناء الحذف:", error);
-    alert("فشل حذف الاجراء ❌");
+    showToast("فشل حذف الاجراء ", "error");
   }
 };
 
 function handleProcedureAdded() {
   showDialogAdd.value = false;
-  fetchProcedures(); // لتحديث الجدول بعد الإضافة
+  fetchProcedures();
 }
+
 
 onMounted(() => {
   fetchProcedures();

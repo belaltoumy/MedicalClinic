@@ -1,6 +1,6 @@
 <template>
   <Dashboard>
-    <div class="doctors-container" dir="rtl">
+    <div class="patient-container" dir="rtl">
       <!-- الهيدر -->
       <header class="page-header">
         <div class="header-content">
@@ -19,7 +19,7 @@
             </div>
           </div>
 
-          <button @click="showDialogAdd = true" class="add-btn">
+<button @click="openAddDialog" class="add-btn">
             <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fill-rule="evenodd"
@@ -125,10 +125,17 @@
           </button>
         </div>
       </main>
-      <!-- نافذة الإضافة -->
-      <compoAddDialog v-model="showDialogAdd" title="إضافة مريض جديد">
-        <AddNewPatient @saved="handleUserAdded" />
-      </compoAddDialog>
+     <compoAddDialog
+  v-model="showDialogAdd"
+  :title="editMode ? 'تعديل مريض' : 'إضافة مريض جديد'"
+>
+  <formPatient
+    :editMode="editMode"
+    :editData="editData"
+    @saved="handleUserAdded"
+  />
+</compoAddDialog>
+
     </div>
 
     <!-- كومبو الزيارات -->
@@ -272,15 +279,20 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import compoTable from "../components/compoTable.vue";
-import compoDialog from "../components/compoDialog.vue";
-import compoAddDialog from "../components/compoAddDialog.vue";
-import AddNewPatient from "../components/addNewPatient.vue";
-import { _get, _delete } from "../api/axois";
-import Dashboard from "../components/dashboard.vue";
+import compoTable from "../../components/compoTable.vue";
+import compoDialog from "../../components/compoDialog.vue";
+import compoAddDialog from "../../components/compoAddDialog.vue";
+import formPatient from "./formPatient.vue";
+import { _get, _delete } from "../../api/axois";
+import Dashboard from "../../components/dashboard.vue";
+import useToast from "../../toast/toast.js";
+
+const { showToast } = useToast();
 
 const patients = ref([]);
 const loading = ref(false);
+const editMode = ref(false);
+const editData = ref(null);
 
 const pageNumber = ref(1);
 const pageSize = ref(10);
@@ -346,10 +358,18 @@ const nextPage = () => {
   }
 };
 
-const editPatient = (patient) => {
-  console.log("تعديل:", patient);
-  // هنا تفتح Dialog أو صفحة تعديل
+const openAddDialog = () => {
+  editMode.value = false;
+  editData.value = null;
+  showDialogAdd.value = true;
 };
+
+const editPatient = (patient) => {
+  editMode.value = true;
+  editData.value = patient;
+  showDialogAdd.value = true;
+};
+
 
 const viewVisits = async (patient) => {
   try {
@@ -364,8 +384,7 @@ const viewVisits = async (patient) => {
 
     showVisitsDialog.value = true;
   } catch (error) {
-    console.error("خطأ أثناء جلب الزيارات:", error);
-    alert("تعذر جلب الزيارات ❌");
+    showToast("تعذر جلب الزيارات ", "error");
   } finally {
     loading.value = false;
   }
@@ -390,15 +409,13 @@ const deletePatient = async (patient) => {
     const res = await _delete(`/api/Patients/${patient.patientId}`);
 
     if (res.status === 200 || res.status === 204) {
-      alert("تم حذف المريض بنجاح ✅");
+      showToast("تم حذف المريض بنجاح ", "success");
       fetchPatients();
     } else {
-      console.error("خطأ من السيرفر:", res.data);
-      alert(`فشل حذف المريض ❌\n${res.data?.message || "حدث خطأ غير معروف"}`);
+      showToast(`فشل حذف المريض \n${res.data?.message }`, "error");
     }
   } catch (error) {
-    console.error("حدث خطأ أثناء الحذف:", error);
-    alert("فشل حذف المريض ❌");
+    showToast("فشل حذف المريض ", "error");
   }
 };
 
@@ -421,18 +438,17 @@ const deleteVisit = async (visit) => {
     const res = await _delete(`/api/Visit/${visit.visitId}`);
 
     if (res.status === 200 || res.status === 204) {
-      alert("تم حذف الزيارة بنجاح ✅");
+      showToast("تم حذف الزيارة بنجاح ", "success");
 
       // حذف الزيارة من الجدول مباشرة (بدون إعادة جلب)
       selectedPatientVisits.value = selectedPatientVisits.value.filter(
         (v) => v.visitId !== visit.visitId
       );
     } else {
-      alert("فشل حذف الزيارة ❌");
+      showToast("فشل حذف الزيارة ", "error");
     }
   } catch (error) {
-    console.error("خطأ أثناء حذف الزيارة:", error);
-    alert("حدث خطأ أثناء الحذف ❌");
+    showToast("حدث خطأ أثناء الحذف ", "error");
   } finally {
     loading.value = false;
   }
@@ -445,7 +461,7 @@ onMounted(() => {
 
 <style scoped>
 /* الحاوية الرئيسية */
-.doctors-container {
+.patient-container {
   background-color: var(--color-gray-100);
   font-family: var(--font-primary);
 }

@@ -119,10 +119,12 @@ import compoDialog from "../components/compoDialog.vue";
 import inputNumber from "../components/inputNumber.vue";
 import inputSelect from "../components/InputSelect.vue";
 import { _get, _delete, _put } from "../api/axois";
+import useToast from "../toast/toast.js";
+
+const { showToast } = useToast();
 
 const Payments = ref([]);
 const loading = ref(false);
-
 const pageNumber = ref(1);
 const pageSize = ref(10);
 const totalPages = ref(1);
@@ -192,12 +194,11 @@ const updatePayment = async () => {
       type: editPaymentData.value.type,
     });
 
-    alert("تم تعديل الدفعة بنجاح ✅");
+    showToast("تم تعديل الدفعة بنجاح ", "success");
     showEditDialog.value = false;
     fetchPayments();
   } catch (error) {
-    console.error(error);
-    alert("فشل تعديل الدفعة ❌");
+    showToast("فشل تعديل الدفعة", "error");
   }
 };
 const deletePayment = async (payment) => {
@@ -210,14 +211,13 @@ const deletePayment = async (payment) => {
     const res = await _delete(`/api/Payments/${payment.paymentId}`);
 
     if (res.status === 200 || res.status === 204) {
-      alert("تم حذف الدفعة بنجاح ✅");
+      showToast("تم حذف الدفعة بنجاح ", "success");
       fetchPayments();
     } else {
-      alert("فشل حذف الدفعة ❌");
+      showToast("فشل حذف الدفعة ", "error");
     }
   } catch (error) {
-    console.error("خطأ أثناء الحذف:", error);
-    alert("فشل حذف الدفعة ❌");
+    showToast("فشل حذف الدفعة", "error");
   }
 };
 

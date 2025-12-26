@@ -16,7 +16,7 @@
         </div>
         
         <button
-          @click="showDialogAdd = true"
+@click="openAddDialog"
           class="add-btn"
         >
           <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
@@ -92,10 +92,18 @@
         </button>
       </div>
     </main>
-    <!-- نافذة الإضافة -->
-    <compoAddDialog v-model="showDialogAdd" title="إضافة طبيب جديد">
-      <AddNewDoctor @saved="handleUserAdded" />
-    </compoAddDialog>
+    <!--  نافذة الاضافة والتعديل -->
+    <compoAddDialog
+  v-model="showDialogForm"
+  :title="dialogMode === 'add' ? 'إضافة طبيب جديد' : 'تعديل بيانات الطبيب'"
+>
+  <formDoctor
+    :mode="dialogMode"
+    :doctor="selectedDoctor"
+    @saved="handleUserAdded"
+  />
+</compoAddDialog>
+
   </div>
   </Dashboard>
 </template>
@@ -106,7 +114,7 @@ import compoTable from '../../components/compoTable.vue';
 import compoAddDialog from '../../components/compoAddDialog.vue';
 import Dashboard from '../../components/dashboard.vue';
 
-import AddNewDoctor from './addNewDoctor.vue';
+import formDoctor from './formDoctor.vue';
 
 import { _get, _delete } from '../../api/axois';
 
@@ -116,7 +124,9 @@ const loading = ref(false);
 const pageNumber = ref(1);
 const pageSize = ref(10);
 const totalPages = ref(1);
-const showDialogAdd = ref(false);
+const showDialogForm = ref(false);
+const dialogMode = ref("add"); // add | edit
+const selectedDoctor = ref(null);
 
 const columns = [
   { key: 'fullName', label: 'اسم الطبيب' },
@@ -159,9 +169,11 @@ const nextPage = () => {
 };
 
 const editDoctor = (doctor) => {
-  console.log('تعديل:', doctor);
-  // هنا تفتح Dialog أو صفحة تعديل
+  dialogMode.value = "edit";
+  selectedDoctor.value = { ...doctor }; // نسخة آمنة
+  showDialogForm.value = true;
 };
+
 
 const deleteDoctor = async (doctor) => {
   const confirmed = confirm(`هل أنت متأكد من حذف ${doctor.fullName}؟`);
@@ -182,11 +194,16 @@ const deleteDoctor = async (doctor) => {
     alert("فشل حذف الطبيب ❌");
   }
 };
+const openAddDialog = () => {
+  dialogMode.value = "add";
+  selectedDoctor.value = null;
+  showDialogForm.value = true;
+};
 
 
 
 function handleUserAdded() {
-  showDialogAdd.value = false;
+  showDialogForm.value = false;
   fetchDoctors(); // لتحديث الجدول بعد الإضافة
 }
 onMounted(() => {

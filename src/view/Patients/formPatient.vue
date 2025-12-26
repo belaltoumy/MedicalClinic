@@ -1,7 +1,5 @@
 <template>
-  <div class="add-patient-form">
-   
-
+  <div class="form-patient">
     <div class="form-grid">
       <div class="form-row">
         <inputText label="الاسم الأول" v-model="newPatient.firstName" />
@@ -19,27 +17,34 @@
 
     <!-- زر الحفظ -->
     <div class="form-actions">
-      <button
-        @click="addNewPatient"
-        class="save-btn"
-        :disabled="isLoading"
-      >
-        <svg v-if="isLoading" class="loading-icon" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
-          <path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        {{ isLoading ? 'جاري الحفظ...' : 'حفظ المريض' }}
-      </button>
+      <button @click="savePatient" :disabled="isLoading" class="save-btn">
+  {{ isLoading ? 'جاري الحفظ...' : (editMode ? 'تحديث المريض' : 'حفظ المريض') }}
+</button>
+
     </div>
   </div>
 </template>
 
 <script setup>
-import inputText from "./inputText.vue";
-import inputDate from "./inputDate.vue";
-import inputSelect from "./InputSelect.vue";
-import { ref } from "vue";
-import { _post } from "../api/axois";
+import inputText from "../../components/inputText.vue";
+import inputDate from "../../components/inputDate.vue";
+import inputSelect from "../../components/inputSelect.vue";
+import { ref, watch } from "vue";
+import { _post , _put } from "../../api/axois.js";
+import useToast from "../../toast/toast.js";
+
+const { showToast } = useToast();
+
+const props = defineProps({
+  editMode: {
+    type: Boolean,
+    default: false
+  },
+  editData: {
+    type: Object,
+    default: null
+  }
+});
 
 const emit = defineEmits(["saved"]);
 
@@ -54,9 +59,24 @@ const newPatient = ref({
   email: "",
 });
 
-// ✅ دالة الإضافة
-const addNewPatient = async () => {
-  // التحقق من أن جميع الحقول ممتلئة
+watch(
+  () => props.editData,
+  (data) => {
+    if (data && props.editMode) {
+      newPatient.value = {
+        patientId: data.patientId,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        birthDate: data.birthDate,
+        gender: data.gender,
+        phone: data.phone,
+        email: data.email
+      };
+    }
+  },
+  { immediate: true }
+);
+const savePatient = async () => {
   if (
     !newPatient.value.firstName ||
     !newPatient.value.lastName ||
@@ -65,40 +85,34 @@ const addNewPatient = async () => {
     !newPatient.value.phone ||
     !newPatient.value.email
   ) {
-    alert("الرجاء تعبئة جميع الحقول");
+    showToast("الرجاء تعبئة جميع الحقول", "error");
     return;
   }
 
+  isLoading.value = true;
+
   try {
-    isLoading.value = true;
     const payload = {
-      firstName: newPatient.value.firstName,
-      lastName: newPatient.value.lastName,
-      birthDate: newPatient.value.birthDate,
-      gender: parseInt(newPatient.value.gender),
-      phone: newPatient.value.phone,
-      email: newPatient.value.email,
-    };
+  firstName: newPatient.value.firstName.trim(),
+  lastName: newPatient.value.lastName.trim(),
+  birthDate: new Date(newPatient.value.birthDate).toISOString(),
+  gender: Number(newPatient.value.gender),
+  phone: newPatient.value.phone.trim(),
+  email: newPatient.value.email.trim()
+};
 
-    const res = await _post("/api/Patients", payload);
-    console.log("تمت الإضافة:", res.data);
 
-    alert("✅ تمت إضافة المريض بنجاح");
-    
-    // إعادة تعيين النموذج
-    newPatient.value = {
-      firstName: "",
-      lastName: "",
-      birthDate: "",
-      gender: null,
-      phone: "",
-      email: "",
-    };
-    
-    emit("saved"); // لإخبار الصفحة الأب بأن الإضافة تمت
-  } catch (error) {
-    console.error("حدث خطأ أثناء الإضافة:", error);
-    alert("❌ حدث خطأ أثناء الإضافة");
+    if (props.editMode) {
+      await _put(`/api/Patients/${newPatient.value.patientId}`, payload);
+      showToast("تم تحديث المريض بنجاح ✅", "success");
+    } else {
+      await _post("/api/Patients", payload);
+      showToast("تمت إضافة المريض بنجاح ✅", "success");
+    }
+
+    emit("saved");
+  } catch (e) {
+    showToast(e.response?.data?.message || "حدث خطأ أثناء الحفظ", "error");
   } finally {
     isLoading.value = false;
   }
@@ -106,7 +120,7 @@ const addNewPatient = async () => {
 </script>
 
 <style scoped>/* حاوية النموذج */
-.add-patient-form {
+.form-patient {
   padding: 24px;
   max-width: 600px;
   margin: 0 auto;
@@ -195,7 +209,7 @@ const addNewPatient = async () => {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .add-patient-form {
+  .form-patient {
     padding: 16px;
   }
 

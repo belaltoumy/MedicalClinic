@@ -5,7 +5,7 @@
       <div class="form-row">
         <inputSelect
   label="نوع المصروف"
-  v-model="newExpense.expenseTypeId"
+  v-model="expense.expenseTypeId"
 >
   <option
     v-for="type in typesExpenses"
@@ -18,7 +18,7 @@
 
 <inputSelect
   label="المستخدم"
-  v-model="newExpense.userId"
+  v-model="expense.userId"
 >
   <option
     v-for="user in users"
@@ -29,14 +29,14 @@
   </option>
 </inputSelect>
 
-        <inputText label="وصف المصروف" v-model="newExpense.description" />
-        <inputNumber label="المبلغ" v-model="newExpense.amount" />
+        <inputText label="وصف المصروف" v-model="expense.description" />
+        <inputNumber label="المبلغ" v-model="expense.amount" />
       </div>
     </div>
     <!-- زر الحفظ -->
     <div class="form-actions">
       <button
-        @click="addNewExpense"
+@click="saveExpense"
         class="save-btn"
         :disabled="LoadingSave"
       >
@@ -51,12 +51,12 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";  
+import { onMounted, watch ,computed} from "vue";  
 import inputText from "../../components/inputText.vue";
 import inputNumber from "../../components/inputNumber.vue";
 import inputSelect from "../../components/InputSelect.vue";
 import { ref } from "vue";
-import { _post, _get } from "../../api/axois";
+import { _post, _get, _put } from "../../api/axois.js";
 import useToast from "../../toast/toast.js";
 
 const { showToast } = useToast();
@@ -69,12 +69,48 @@ const LoadingSave = ref(false);
 const typesExpenses = ref([]);
 const users = ref([]);
 
-const newExpense = ref({
+const props = defineProps({
+  modelValue: {
+    type: Object,
+    default: null,
+  },
+});
+
+const expense = ref({
+  id: null,
   description: "",
   amount: null,
   expenseTypeId: "",
   userId: "",
 });
+const resetForm = () => {
+  expense.value = {
+    id: null,
+    description: "",
+    amount: null,
+    expenseTypeId: "",
+    userId: "",
+  };
+};
+watch(
+  () => props.modelValue,
+  (val) => {
+    if (val) {
+      expense.value = {
+        id: val.expenseId, // مهم جداً
+        description: val.description,
+        amount: val.amount,
+        expenseTypeId: val.expenseTypeId,
+        userId: val.userId,
+      };
+    } else {
+      resetForm();
+    }
+  },
+  { immediate: true }
+);
+
+const isEdit = computed(() => !!expense.value.id);
 
 const fetchUsers = async () => {
   try {
@@ -82,7 +118,7 @@ const fetchUsers = async () => {
     const res = await _get("/api/Auth/getAllUsers");
     users.value = res.data;
   } catch (error) {
-    console.error("حدث خطأ أثناء جلب المستخدمين:", error);
+    showToast("حدث خطأ أثناء جلب المستخدمين", "error");
   } finally {
     isLoading.value = false;
   }
@@ -94,50 +130,50 @@ const fetchTypeExpense = async () => {
     const res = await _get("/api/Expenses/getAllExpenseType");
     typesExpenses.value = res.data;
   } catch (error) {
-    console.error("حدث خطأ أثناء جلب أنواع المصروفات:", error);
+    showToast("حدث خطأ أثناء جلب أنواع المصروفات", "error");
   } finally {
     isLoading.value = false;
   }
 };
 // ✅ دالة الإضافة
-const addNewExpense = async () => {
-  // التحقق من أن جميع الحقول ممتلئة
+const saveExpense = async () => {
   if (
-    !newExpense.value.description ||
-    newExpense.value.amount <= 0 ||
-    !newExpense.value.expenseTypeId ||
-    !newExpense.value.userId
+    !expense.value.description ||
+    expense.value.amount <= 0 ||
+    !expense.value.expenseTypeId ||
+    !expense.value.userId
   ) {
     showToast("يرجى تعبئة جميع الحقول", "error");
     return;
   }
+
   try {
     LoadingSave.value = true;
+
     const payload = {
-      description: newExpense.value.description,
-      amount: newExpense.value.amount,
-      expenseTypeId: newExpense.value.expenseTypeId,
-      userId: newExpense.value.userId
+      description: expense.value.description,
+      amount: expense.value.amount,
+      expenseTypeId: expense.value.expenseTypeId,
+      userId: expense.value.userId,
     };
-    const res = await _post("/api/Expenses", payload);
-    console.log("تمت الإضافة:", res.data);
-    showToast("تمت إضافة المصروف بنجاح", "success");
-    
-    // إعادة تعيين النموذج
-    newExpense.value = {
-      description: "",
-      amount: 0,
-      expenseTypeId: "",
-      userId: "",
-    };
-    
-    emit("saved"); // لإخبار الصفحة الأب بأن الإضافة تمت
+
+    if (isEdit.value) {
+      await _put(`/api/Expenses/${expense.value.id}`, payload);
+      showToast("تم تعديل المصروف بنجاح", "success");
+    } else {
+      await _post("/api/Expenses", payload);
+      showToast("تمت إضافة المصروف بنجاح", "success");
+    }
+
+    emit("saved");
+    resetForm();
   } catch (error) {
-    showToast("حدث خطأ أثناء الإضافة", "error");
+    showToast("حدث خطأ أثناء الحفظ", "error");
   } finally {
     LoadingSave.value = false;
   }
 };
+
 
 onMounted(() => {
   fetchUsers();

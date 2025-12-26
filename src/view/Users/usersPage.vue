@@ -42,14 +42,7 @@
             show-actions
           >
             <template #actions="{ row }">
-              <button class="action-btn edit-btn" @click="editUser(row)">
-                <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
-                  ></path>
-                </svg>
-                تعديل
-              </button>
+            
               <button class="action-btn delete-btn" @click="deleteUser(row)">
                 <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
                   <path
@@ -80,11 +73,14 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
-import CompoTable from "../components/compoTable.vue";
-import AddNewUser from "../components/addNewUser.vue";
-import { _get, _delete } from "../api/axois";
-import compoDialog from "../components/compoAddDialog.vue";
-import Dashboard from "../components/dashboard.vue";
+import CompoTable from "../../components/compoTable.vue";
+import AddNewUser from "../Users/addNewUser.vue";
+import { _get, _delete } from "../../api/axois";
+import compoDialog from "../../components/compoDialog.vue";
+import Dashboard from "../../components/dashboard.vue";
+import useToast from "../../toast/toast.js";
+
+const { showToast } = useToast();
 // بيانات الجدول
 const users = ref([]);
 const loading = ref(false);
@@ -127,11 +123,6 @@ const fetchUsers = async () => {
   }
 };
 
-// أزرار الإجراءات
-function editUser(user) {
-  alert(`تعديل المستخدم: ${user.userName}`);
-}
-
 const deleteUser = async (user) => {
   const confirmed = confirm(`هل أنت متأكد من حذف ${user.userName}؟`);
   if (!confirmed) return;
@@ -140,15 +131,13 @@ const deleteUser = async (user) => {
     const res = await _delete(`/api/Auth/Id?Id=${user.id}`);
 
     if (res.status === 200 || res.status === 204) {
-      alert("تم حذف المستخدم بنجاح ✅");
+      showToast("تم حذف المستخدم بنجاح", "success");
       fetchUsers(); // تحديث الجدول بعد الحذف
     } else {
-      console.error("خطأ من السيرفر:", res.data);
-      alert(`فشل حذف المستخدم ❌\n${res.data?.message || ""}`);
+      showToast("فشل حذف المستخدم", "error");
     }
   } catch (error) {
-    console.error("حدث خطأ أثناء الحذف:", error);
-    alert("فشل حذف المستخدم ❌");
+    showToast("فشل حذف المستخدم", "error");
   }
 };
 

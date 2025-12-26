@@ -1,6 +1,5 @@
 <template>
   <div class="material-form">
- 
     <!-- نموذج البيانات -->
     <div class="form-content">
       <div class="input-grid">
@@ -29,7 +28,7 @@
       <!-- أزرار الإجراءات -->
       <div class="form-actions">
         <button
-          @click="addNewMaterial"
+          @click="submitMaterial"
           :disabled="loading"
           class="save-btn"
         >
@@ -43,10 +42,13 @@
 </template>
 
 <script setup>
-import inputText from "./inputText.vue";
-import inputNumber from "./inputNumber.vue";
+import inputText from "../../components/inputText.vue";
+import inputNumber from "../../components/inputNumber.vue";
 import { ref, watch } from "vue";
-import { _post, _put } from "../api/axois";
+import { _post, _put } from "../../api/axois.js";
+import useToast from "../../toast/toast.js";
+
+const { showToast } = useToast();
 
 const props = defineProps({
   editMode: {
@@ -56,14 +58,11 @@ const props = defineProps({
   editData: {
     type: Object,
     default: null
-  },
-  loading: {
-    type: Boolean,
-    default: false
   }
 });
 
-const emit = defineEmits(["material-added"]);
+
+const emit = defineEmits(["saved"]);
 
 const loading = ref(false);
 const newMaterial = ref({
@@ -73,29 +72,31 @@ const newMaterial = ref({
   costBearer: null
 });
 
-// مراقبة بيانات التعديل
-watch(() => props.editData, (newData) => {
-  if (newData && props.editMode) {
-    newMaterial.value = {
-      id: newData.id,
-      name: newData.name || "",
-      unit: newData.unit || "",
-      unitPrice: newData.unitPrice || 0,
-      costBearer: newData.costBearer || 0
-    };
-  }
-}, { immediate: true });
+watch(
+  () => props.editData,
+  (newData) => {
+    if (newData && props.editMode) {
+      newMaterial.value = {
+        materialId: newData.materialId,
+        name: newData.name || "",
+        unit: newData.unit || "",
+        unitPrice: newData.unitPrice || 0,
+        costBearer: newData.costBearer || 0
+      };
+    }
+  },
+  { immediate: true }
+);
 
 // دالة الحفظ (إضافة أو تعديل)
-const addNewMaterial = async () => {
-  // التحقق من صحة البيانات
+const submitMaterial = async () => {
   if (
     !newMaterial.value.name ||
     !newMaterial.value.unit ||
     newMaterial.value.unitPrice <= 0 ||
     newMaterial.value.costBearer <= 0
   ) {
-    alert("الرجاء تعبئة جميع الحقول بشكل صحيح");
+    showToast("يرجى تعبئة جميع الحقول", "error");
     return;
   }
 
@@ -106,34 +107,23 @@ const addNewMaterial = async () => {
       name: newMaterial.value.name,
       unit: newMaterial.value.unit,
       unitPrice: newMaterial.value.unitPrice,
-      costBearer: newMaterial.value.costBearer,
+      costBearer: newMaterial.value.costBearer
     };
 
-    let res;
-    if (props.editMode && newMaterial.value.id) {
-      // تعديل مادة موجودة
-      res = await _put(`/api/Materials/${newMaterial.value.id}`, payload);
-      alert("✅ تم تحديث المادة بنجاح");
+    if (props.editMode) {
+      await _put(
+        `/api/Materials/${newMaterial.value.materialId}`,
+        payload
+      );
+      showToast("تم تحديث المادة بنجاح ✅", "success");
     } else {
-      // إضافة مادة جديدة
-      res = await _post("/api/Materials", payload);
-      alert("✅ تمت إضافة المادة بنجاح");
+      await _post("/api/Materials", payload);
+      showToast("تمت إضافة المادة بنجاح ✅", "success");
     }
 
-    console.log("تمت العملية:", res.data);
-    
-    // إعادة تعيين النموذج
-    newMaterial.value = {
-      name: "",
-      unit: "",
-      unitPrice: 0,
-      costBearer: 0
-    };
-
-    emit("material-added");
-  } catch (error) {
-    console.error("حدث خطأ:", error.response ? error.response.data : error);
-    alert(`❌ حدث خطأ أثناء ${props.editMode ? 'التحديث' : 'الإضافة'}`);
+    emit("saved");
+  } catch (e) {
+    showToast("حدث خطأ أثناء الحفظ ❌", "error");
   } finally {
     loading.value = false;
   }

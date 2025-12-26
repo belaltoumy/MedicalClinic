@@ -179,132 +179,54 @@ const filteredRows = computed(() => {
 </script>
 
 <style scoped>
-/* الحاوية الرئيسية */
+ /* =========================
+   الحاوية الرئيسية
+========================= */
 .table-container {
   width: 100%;
   height: 75vh;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
-/* حالة التحميل */
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  color: #6b7280;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  color: red;
-  margin-bottom: 16px;
-}
-
-.loading-text {
-  font-size: 16px;
-  font-weight: 500;
-  margin: 0;
-}
-
-/* حالة عدم وجود بيانات */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  color: #9ca3af;
-}
-
-.empty-icon {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 16px;
-  color: #d1d5db;
-}
-
-.empty-text {
-  font-size: 16px;
-  font-weight: 500;
-  margin: 0;
-}
-
-/* قائمة منسدلة لكل عمود */
-.column-title {
-  position: relative; /* هذا يجعل القائمة absolute بالنسبة للعمود */
-  display: inline-block;
-}
-
-.dropdown-arrow {
-  margin-left: 6px;
-  font-size: 12px;
-  user-select: none;
-}
-
-.dropdown-menu {
-  color: var(--color-primary-900);
-  background: var(--color-accent-500);
-
-  position: absolute;
-  top: 100%; /* أسفل عنوان العمود مباشرة */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999; /* تأكد أنها فوق كل شيء */
-  min-width: 160px;
-  max-height: 300px;
-  overflow-y: auto; /* إذا كانت كثيرة العناصر */
-}
-
-.dropdown-item {
-  padding: 4px 12px;
-  white-space: nowrap;
-}
-
-.dropdown-item label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.dropdown-item:hover {
-  background-color: #f3f4f6;
-}
-
-/* حاوية الجدول
+/* =========================
+   Wrapper للسكرول
+========================= */
 .table-wrapper {
+  flex: 1;
   overflow-x: auto;
-} */
+  overflow-y: auto;
+}
 
-/* الجدول */
+/* =========================
+   الجدول
+========================= */
 .data-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 700px; /* 🔑 يمنع تكسير الأعمدة */
 }
 
-/* رأس الجدول */
+/* =========================
+   رأس الجدول
+========================= */
 .table-header {
   background: var(--color-primary-700);
 }
 
 .table-header th {
-  padding: 16px 12px;
-  text-align: center;
+  padding: 14px 10px;
   font-size: 14px;
   font-weight: 600;
   color: white;
+  text-align: center;
   border-bottom: 2px solid var(--color-primary-900);
-  position: relative;
+  white-space: nowrap;
 }
 
 .index-header {
@@ -316,122 +238,81 @@ const filteredRows = computed(() => {
 }
 
 .actions-header {
-  min-width: 140px;
+  width: 100px;
 }
 
-/* جسم الجدول */
+/* =========================
+   جسم الجدول
+========================= */
 .table-body {
   background: white;
-}
-
-.table-row {
-  transition: all 0.2s ease;
-}
-
-.table-row:hover {
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
 }
 
 .table-row:nth-child(even) {
   background: #fafbfc;
 }
 
-.table-row:nth-child(even):hover {
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+.table-row:hover {
+  background: #f8fafc;
 }
 
-/* خلايا البيانات */
+/* =========================
+   خلايا البيانات
+========================= */
 .table-row td {
-  padding: 8px 8px;
+  padding: 8px 6px;
   text-align: center;
   border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 .index-cell {
   font-weight: 600;
   color: var(--color-primary-700);
-  background: linear-gradient(135deg, #eff6ff, #dbeafe);
-  font-size: 14px;
+  background: #eff6ff;
 }
 
-.data-cell {
-  color: #374151;
-  font-size: 14px;
-}
-
-.cell-text {
-  color: #374151;
-  font-weight: 500;
-}
-
-/* خلية الإجراءات */
+/* =========================
+   خلية الإجراءات (الحل الأساسي)
+========================= */
 .actions-cell {
-  padding: 12px;
+  text-align: center;
 }
 
 .actions-container {
   display: flex;
-  gap: 8px;
+  flex-wrap: nowrap;        /* 🔑 يمنع نزول الأزرار */
+  gap: 6px;
   justify-content: center;
   align-items: center;
 }
 
-/* تحسينات للشاشات الصغيرة */
-@media (max-width: 768px) {
-  .table-wrapper {
-    overflow-x: scroll;
-  }
-
-  .data-table {
-    min-width: 600px;
-  }
-
-  .table-header th,
-  .table-row td {
-    padding: 12px 8px;
-    font-size: 13px;
-  }
-
-  .actions-container {
-    flex-direction: column;
-    gap: 4px;
-  }
-}
-
-/* تأثيرات الأنيميشن */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.table-container {
-  animation: fadeIn 0.5s ease-out;
-}
-
-/* تحسين أزرار الإجراءات */
+/* الأزرار */
 .actions-container button {
-  transition: all 0.2s ease;
+  padding: 6px 10px;
+  font-size: 13px;
   border-radius: 8px;
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .actions-container button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
-/* زر السهم */
-.dropdown-trigger {
-  margin-right: 6px;
-  cursor: pointer;
+
+/* =========================
+   Dropdown filter
+========================= */
+.column-title {
+  position: relative;
   display: inline-flex;
   align-items: center;
+  gap: 6px;
+}
+
+.dropdown-trigger {
+  cursor: pointer;
   transition: transform 0.25s ease;
 }
 
@@ -439,62 +320,66 @@ const filteredRows = computed(() => {
   transform: rotate(180deg);
 }
 
-/* القائمة */
 .dropdown-menu {
   position: absolute;
   top: 110%;
   left: 50%;
   transform: translateX(-50%);
   background: white;
-  color: #1f2937;
   border-radius: 12px;
-  padding: 8px 0;
+  padding: 6px 0;
   min-width: 180px;
   max-height: 240px;
   overflow-y: auto;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   z-index: 1000;
 }
 
-/* عناصر القائمة */
 .dropdown-item {
   padding: 6px 14px;
-  transition: background 0.2s ease;
 }
 
 .dropdown-item:hover {
   background: #f1f5f9;
 }
 
-/* الليبل */
 .dropdown-item label {
   display: flex;
-  align-items: center;
   gap: 10px;
   font-size: 14px;
   cursor: pointer;
 }
 
-/* checkbox */
-.dropdown-item input[type="checkbox"] {
-  accent-color: var(--color-primary-700);
-  width: 15px;
-  height: 15px;
+/* =========================
+   الموبايل (الحل الذكي)
+========================= */
+@media (max-width: 768px) {
+  .data-table {
+    min-width: 600px;
+  }
+
+  .table-header th,
+  .table-row td {
+    font-size: 12px;
+    padding: 6px 4px;
+  }
+
+  /* تصغير الأزرار */
+  .actions-container button {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  /* إخفاء النص وترك الأيقونة */
+  .btn-text {
+    display: none;
+  }
+
+  /* تثبيت عرض عمود الإجراءات */
+  .actions-header,
+  .actions-cell {
+    width: 80px;
+  }
 }
 
-/* أنيميشن */
-.dropdown-fade-enter-active,
-.dropdown-fade-leave-active {
-  transition: all 0.2s ease;
-}
-
-.dropdown-fade-enter-from {
-  opacity: 0;
-  transform: translateX(-50%) translateY(-5px);
-}
-
-.dropdown-fade-leave-to {
-  opacity: 0;
-  transform: translateX(-50%) translateY(-5px);
-}
 </style>

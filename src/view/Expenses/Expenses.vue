@@ -15,10 +15,8 @@
           </div>
         </div>
         
-        <button
-          @click="showDialogAdd = true"
-          class="add-btn"
-        >
+        <button @click="openAdd" class="add-btn">
+
           <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
           </svg>
@@ -38,10 +36,8 @@
           :showActions="true"
         >
           <template #actions="{ row }">
-            <button
-              class="action-btn edit-btn"
-              @click="editPatient(row)"
-            >
+           <button class="action-btn edit-btn" @click="editExpense(row)">
+
               <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
               </svg>
@@ -90,10 +86,16 @@
       </div>
     </main>
 
-    <!-- نافذة الإضافة -->
-    <compoAddDialog v-model="showDialogAdd" title="إضافة مصروف جديد">
-        <addNewExpense @saved="handleExpenseAdded" />
-    </compoAddDialog>
+ <compoAddDialog
+  v-model="showDialog"
+  :title="selectedExpense ? 'تعديل مصروف' : 'إضافة مصروف'"
+>
+  <formExpense
+    :modelValue="selectedExpense"
+    @saved="handleSaved"
+  />
+</compoAddDialog>
+
   </div>
   </Dashboard>
 </template>
@@ -102,7 +104,7 @@
 import { ref, onMounted } from 'vue';
 import compoTable from '../../components/compoTable.vue';
 import compoAddDialog from '../../components/compoAddDialog.vue';
-import addNewExpense from '../Expenses/addNewExpense.vue';
+import formExpense from '../Expenses/formExpense.vue';
 import { _get ,_delete } from '../../api/axois';
 import Dashboard from '../../components/dashboard.vue';
 
@@ -112,7 +114,8 @@ const loading = ref(false);
 const pageNumber = ref(1);
 const pageSize = ref(10);
 const totalPages = ref(1);
-const showDialogAdd = ref(false);
+const selectedExpense = ref(null);
+const showDialog = ref(false);
 
 const columns = [
   { key: 'expenseTypeName', label: 'نوع المصروف' },
@@ -184,10 +187,21 @@ const deleteExpense = async (expense) => {
   }
 };
 
-function handleExpenseAdded() {
-  showDialogAdd.value = false;
-  fetchExpenses(); // لتحديث الجدول بعد الإضافة
-}
+const openAdd = () => {
+  selectedExpense.value = null; // وضع إضافة
+  showDialog.value = true;
+};
+
+const editExpense = (row) => {
+  selectedExpense.value = { ...row }; // نمرر البيانات
+  showDialog.value = true;
+};
+
+const handleSaved = () => {
+  showDialog.value = false;
+  fetchExpenses();
+};
+
 
 onMounted(() => {
   fetchExpenses();

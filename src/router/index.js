@@ -18,7 +18,7 @@ const routes = [
   {
     path: "/users",
     name: "users",
-    component: () => import("../view/usersPage.vue"),
+    component: () => import("../view/Users/UsersPage.vue"),
   },
   {
     path: "/doctors",
@@ -28,12 +28,12 @@ const routes = [
   {
     path: "/materials",
     name: "materials",
-    component: () => import("../view/materialsPage.vue"),
+    component: () => import("../view/Materials/materialsPage.vue"),
   },
   {
     path: "/patients",
     name: "patients",
-    component: () => import("../view/Patients.vue"),
+    component: () => import("../view/Patients/Patients.vue"),
   },
   {
     path: "/visites",
@@ -43,7 +43,7 @@ const routes = [
   {
     path: "/procedures",
     name: "procedures",
-    component: () => import("../view/Procedures.vue"),
+    component: () => import("../view/Procedures/Procedures.vue"),
   },
   {
     path: "/payments",

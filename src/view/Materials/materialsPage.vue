@@ -18,7 +18,7 @@
             </div>
           </div>
 
-          <button @click="showDialogAdd = true" class="add-btn">
+<button @click="openAddDialog" class="add-btn">
             <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fill-rule="evenodd"
@@ -118,25 +118,37 @@
         </div>
       </main>
 
-      <!-- نافذة الإضافة -->
-      <compoAddDialog v-model="showDialogAdd" title="إضافة مادة جديدة">
-        <AddNewMaterial @saved="handleMaterialAdded" />
-      </compoAddDialog>
+     <compoAddDialog
+  v-model="showDialogForm"
+  :title="editMode ? 'تعديل مادة' : 'إضافة مادة جديدة'"
+>
+  <FormMaterial
+    :editMode="editMode"
+    :editData="editData"
+    @saved="handleMaterialSaved"
+  />
+</compoAddDialog>
+
     </div>
   </Dashboard>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import CompoTable from "../components/compoTable.vue";
-import compoAddDialog from "../components/compoAddDialog.vue";
-import { _get, _delete } from "../api/axois";
-import AddNewMaterial from "../components/addNewMaterial.vue";
-import Dashboard from "../components/dashboard.vue";
+import CompoTable from "../../components/compoTable.vue";
+import compoAddDialog from "../../components/compoAddDialog.vue";
+import { _get, _delete } from "../../api/axois";
+import FormMaterial from "../Materials/formMaterial.vue";
+import Dashboard from "../../components/Dashboard.vue";
+import useToast from "../../toast/toast.js";
+
+const { showToast } = useToast();
 
 const materials = ref([]);
 const loading = ref(false);
-const showDialogAdd = ref(false);
+const showDialogForm = ref(false);
+const editMode = ref(false);
+const editData = ref(null);
 
 const pageNumber = ref(1);
 const pageSize = ref(10);
@@ -184,13 +196,16 @@ const prevPage = () => {
   }
 };
 
-// عند تحميل الصفحة أول مرة
-onMounted(() => {
-  fetchMaterials();
-});
+const openAddDialog = () => {
+  editMode.value = false;
+  editData.value = null;
+  showDialogForm.value = true;
+};
 
 const editMaterial = (row) => {
-  console.log("تعديل:", row);
+  editMode.value = true;
+  editData.value = row;
+  showDialogForm.value = true;
 };
 
 const deleteMaterial = async (material) => {
@@ -201,22 +216,25 @@ const deleteMaterial = async (material) => {
     const res = await _delete(`/api/Materials/${material.materialId}`);
 
     if (res.status === 200 || res.status === 204) {
-      alert("تم حذف المادة بنجاح ✅");
+      showToast("تم حذف المادة بنجاح ✅", "success");
       fetchMaterials();
     } else {
-      console.error("خطأ من السيرفر:", res.data);
-      alert(`فشل حذف المادة ❌\n${res.data?.message || "حدث خطأ غير معروف"}`);
+      showToast(`فشل حذف المادة ❌\n${res.data?.message || "حدث خطأ غير معروف"}`, "error");
     }
   } catch (error) {
-    console.error("حدث خطأ أثناء الحذف:", error);
-    alert("فشل حذف المادة ❌");
+    showToast("فشل حذف المادة ❌", "error");
   }
 };
 
-const handleMaterialAdded = () => {
+const handleMaterialSaved = () => {
+  showDialogForm.value = false;
   fetchMaterials();
-  showDialogAdd.value = false;
 };
+
+// عند تحميل الصفحة أول مرة
+onMounted(() => {
+  fetchMaterials();
+});
 </script>
 
 <style scoped>
