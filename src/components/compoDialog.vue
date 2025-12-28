@@ -86,7 +86,7 @@ const close = () => {
   border-radius: 12px;
   width: 50%;
   max-width: 95vw;
-  max-height: 90vh;
+  max-height: 70vh;
   overflow-y: auto;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   animation: slideIn 0.3s ease-in-out;

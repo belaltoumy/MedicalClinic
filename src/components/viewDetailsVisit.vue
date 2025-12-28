@@ -1,4 +1,3 @@
-<!-- src/components/viewDetailsVisit.vue -->
 <template>
   <div class="details-container" dir="rtl">
     <!-- Loading -->
@@ -14,56 +13,46 @@
     <!-- Visit Details -->
     <div v-else-if="visit" class="space-y-6">
       <!-- معلومات الزيارة -->
-      <div
-        class="mt-2 overflow-x-auto rounded-lg shadow-lg border border-gray-200"
-      >
-        <table class="min-w-full bg-white">
-          <tbody class="divide-y divide-gray-200 bg-gray-200">
-            <tr>
-              <td class="px-6 py-4 font-semibold text-center">اسم الطبيب</td>
-              <td class="px-6 py-4 text-center">
-                {{ visit.doctorName || "غير محدد" }}
-              </td>
-            </tr>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- اسم الطبيب -->
+        <div class="info-box">
+          <span class="label">اسم الطبيب</span>
+          <span class="value">{{ visit.doctorName || "غير محدد" }}</span>
+        </div>
 
-            <tr>
-              <td class="px-6 py-4 font-semibold text-center">اسم المريض</td>
-              <td class="px-6 py-4 text-center">
-                {{ visit.patientFullName || "غير محدد" }}
-              </td>
-            </tr>
+        <!-- اسم المريض -->
+        <div class="info-box">
+          <span class="label">اسم المريض</span>
+          <span class="value">{{ visit.patientFullName || "غير محدد" }}</span>
+        </div>
 
-            <tr>
-              <td class="px-6 py-4 font-semibold text-center">تاريخ الزيارة</td>
-              <td class="px-6 py-4 text-center">
-                {{ formatDate(visit.visitDate) }}
-              </td>
-            </tr>
+        <!-- تاريخ الزيارة -->
+        <div class="info-box">
+          <span class="label">تاريخ الزيارة</span>
+          <span class="value">{{ formatDate(visit.visitDate) }}</span>
+        </div>
 
-            <tr>
-              <td class="px-6 py-4 font-semibold text-center">
-                التكلفة الإجمالية
-              </td>
-              <td class="px-6 py-4 text-center font-bold text-indigo-700">
-                {{ visit.totalCost }}
-              </td>
-            </tr>
+        <!-- التكلفة -->
+        <div class="info-box">
+          <span class="label">التكلفة الإجمالية</span>
+          <span class="value">
+            {{ visit.totalCost }}
+          </span>
+        </div>
 
-            <tr>
-              <td class="px-6 py-4 font-semibold text-center">نوع الزيارة</td>
-              <td class="px-6 py-4 text-center">
-                {{ getTypeName(visit.type) }}
-              </td>
-            </tr>
+        <!-- نوع الزيارة -->
+        <div class="info-box">
+          <span class="label">نوع الزيارة</span>
+          <span class="value">{{ getTypeName(visit.type) }}</span>
+        </div>
 
-            <tr>
-              <td class="px-6 py-4 font-semibold text-center">حالة الزيارة</td>
-              <td class="px-6 py-4 text-center">
-                {{ getStatusName(visit.status) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- الحالة -->
+        <div class="info-box">
+          <span class="label">حالة الزيارة</span>
+          <span class="value" :class="visit.status === 0 ? 'pending' : 'done'">
+            {{ getStatusName(visit.status) }}
+          </span>
+        </div>
       </div>
 
       <div class="mt-8 flex justify-center gap-4">
@@ -81,16 +70,14 @@
         <button class="add-subvisit-btn" @click="showPaymentsDialog = true">
           تفاصيل الدفعات
         </button>
+       <button class="add-subvisit-btn" @click="openAddProcedureDialog">
+  تعديل عناصر الزيارة  
+</button>
+
       </div>
-
       <!-- Dialog إضافة زيارة فرعية -->
-      <compoDialog v-model="showSubVisitDialog" title="إضافة زيارة مراجعة">
+      <compoAddDialog v-model="showSubVisitDialog" title="إضافة زيارة مراجعة">
         <div class="space-y-5">
-          <div class="text-sm text-gray-600">
-            <strong>الزيارة الأصلية:</strong> #{{ visit?.visitId }}
-          </div>
-
-          <label>اختر الطبيب</label>
           <InputSelect
             v-model="subVisitForm.doctorId"
             label="اختر الطبيب"
@@ -119,18 +106,27 @@
             </button>
           </div>
         </div>
-      </compoDialog>
+      </compoAddDialog>
+
       <compoDialog v-model="showPaymentsDialog" title="تفاصيل الدفعات">
         <PaymentDetails :patientId="visit.patientId" />
-
       </compoDialog>
+
+     <compoDialog v-model="showAddProVisitDialog" title="تعديل الاجراء">
+  <addProcedureVisit
+  :visitId="visit.visitId"
+  :visitItems="visit.visitItems"
+  @saved="onProcedureAdded"
+/>
+
+</compoDialog>
+
 
       <!-- عناصر الزيارة -->
       <div class="mt-12">
         <h3 class="text-2xl font-bold mb-6 text-indigo-700 text-right">
           عناصر الزيارة
         </h3>
-
         <div
           v-if="visit.visitItems?.length"
           class="overflow-x-auto rounded-lg shadow-lg border border-gray-200"
@@ -200,10 +196,8 @@
           v-if="visit.subVisits?.length"
           class="overflow-x-auto rounded-lg shadow-lg border border-gray-200"
         >
-          <table class="min-w-full bg-white">
-            <thead
-              class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
-            >
+          <table class="min-w-full bg-white visit-table">
+            <thead class="visit-table-head">
               <tr>
                 <th class="px-6 py-4 text-center">رقم الزيارة</th>
                 <th class="px-6 py-4 text-center">اسم المريض</th>
@@ -216,7 +210,7 @@
               </tr>
             </thead>
 
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-gray-200 visit-table-body">
               <tr
                 v-for="(sub, index) in visit.subVisits"
                 :key="sub.visitId"
@@ -297,9 +291,12 @@
 import { ref, watch, onMounted } from "vue";
 import { _get, _post, _delete } from "../api/axois";
 import compoDialog from "./compoDialog.vue";
+import compoAddDialog from "./compoAddDialog.vue";
 import InputSelect from "./InputSelect.vue";
 import PaymentDetails from "./viewDetailsPayment.vue";
+import addProcedureVisit from "./addProcedureVisit.vue";
 
+const showAddProVisitDialog = ref(false);
 
 const showPaymentsDialog = ref(false);
 
@@ -357,6 +354,17 @@ const openAddSubVisitDialog = () => {
   showSubVisitDialog.value = true;
 };
 
+const onProcedureAdded = () => {
+  showAddProVisitDialog.value = false;
+  fetchVisitDetails(); // يرجّع العناصر الجديدة
+};
+
+
+
+const openAddProcedureDialog = () => {
+  showAddProVisitDialog.value = true;
+};
+
 // إضافة زيارة فرعية
 const addSubVisit = async () => {
   if (!subVisitForm.value.doctorId) {
@@ -394,7 +402,6 @@ const deleteSubVisit = async (id) => {
   }
 };
 
-
 // تحديث عند تغيير visitId
 watch(() => props.visitId, fetchVisitDetails, { immediate: true });
 onMounted(() => {
@@ -416,32 +423,61 @@ const formatDate = (dateString) => {
 <style scoped>
 .details-container {
   padding: 24px;
-  font-family: "Segoe UI", Tahoma, sans-serif;
+  font-family: var(--font-primary);
+}
+.info-box {
+  background: var(--color-white);
+  border-radius: 14px;
+  padding: 18px;
+  border: 1px solid var(--color-gray-100);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.info-card {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
+/* Label */
 .label {
-  display: block;
-  font-size: 14px;
-  color: #64748b;
-  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--color-gray-500);
+  font-family: var(--font-secondary);
 }
+
+/* Value */
 .value {
   font-size: 18px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--color-primary-700);
+}
+.status-pill {
+  width: fit-content;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-secondary);
+}
+
+/* Pending */
+.status-pill.pending {
+  background: rgba(56, 189, 248, 0.18);
+  color: var(--color-secondary-500);
+}
+
+/* Done */
+.status-pill.done {
+  background: rgba(184, 165, 122, 0.25);
+  color: var(--color-accent-500);
 }
 
 .add-subvisit-btn {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-700),
+    var(--color-primary-500)
+  );
+  color: var(--color-white);
   padding: 14px 28px;
   border-radius: 12px;
   font-weight: 600;
@@ -451,27 +487,67 @@ const formatDate = (dateString) => {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
-  transition: all 0.3s;
+  box-shadow: 0 6px 20px rgba(30, 41, 59, 0.35);
+  transition: all 0.25s ease;
 }
 
 .add-subvisit-btn:hover {
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 10px 28px rgba(30, 41, 59, 0.45);
 }
 
+/* Icons */
 .btn-icon {
   width: 20px;
   height: 20px;
 }
 
+/* Cancel */
 .cancel-btn {
-  background: #e2e8f0;
-  color: #475569;
+  background: var(--color-gray-100);
+  color: var(--color-primary-700);
   padding: 10px 20px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
+}
+.visit-table-head {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-700),
+    var(--color-primary-500)
+  );
+  color: var(--color-white);
+}
+
+.visit-table-head th {
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+
+/* Table Body */
+.visit-table-body tr {
+  transition: background 0.25s ease;
+}
+
+.visit-table-body tr:hover {
+  background: rgba(184, 165, 122, 0.08); /* accent خفيف */
+}
+
+.visit-table-body td {
+  color: var(--color-primary-700);
+  font-size: 14px;
+}
+
+/* Borders */
+.visit-table {
+  border-color: var(--color-gray-100);
+}
+
+/* Cost highlight */
+.visit-cost {
+  font-weight: 600;
+  color: var(--color-accent-500);
 }
 </style>

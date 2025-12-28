@@ -1,112 +1,137 @@
 <template>
   <Dashboard>
-  <div class="doctors-container" dir="rtl">
-    <!-- الهيدر -->
-    <header class="page-header">
-      <div class="header-content">
-        <div class="title-section">
-          <div class="title-icon">
-            <svg fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+    <div class="doctors-container" dir="rtl">
+      <!-- الهيدر -->
+      <header class="page-header">
+        <div class="header-content">
+          <div class="title-section">
+            <div class="title-icon">
+              <svg fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </div>
+            <div class="title-text">
+              <h1 class="page-title">إدارة المصاريف</h1>
+            </div>
+          </div>
+
+          <button @click="openAdd" class="add-btn">
+            <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clip-rule="evenodd"
+              ></path>
             </svg>
-          </div>
-          <div class="title-text">
-            <h1 class="page-title">إدارة المصاريف</h1>
-          </div>
+            إضافة مصروف جديد
+          </button>
         </div>
-        
-        <button @click="openAdd" class="add-btn">
+      </header>
 
-          <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
-          </svg>
-          إضافة مصروف جديد
-        </button>
-      </div>
-    </header>
-
-    <!-- المحتوى الرئيسي -->
-    <main class="main-content">
-      <!-- الجدول -->
-      <div class="table-section">
-        <compoTable
-          :columns="columns"
-          :rows="Expenses"
-          :loading="loading"
-          :showActions="true"
-        >
-          <template #actions="{ row }">
-           <button class="action-btn edit-btn" @click="editExpense(row)">
-
-              <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
-              </svg>
-              تعديل
-            </button>
-            <button
-              class="action-btn delete-btn"
-              @click="deleteExpense(row)"
+      <!-- المحتوى الرئيسي -->
+      <main class="main-content">
+        <!-- الجدول -->
+        <div class="table-section">
+          <compoTable
+            :columns="columns"
+            :rows="Expenses"
+            :loading="loading"
+            :showActions="true"
+          >
+            <template #actions="{ row }">
+              <button class="action-btn edit-btn" @click="editExpense(row)">
+                <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
+                  ></path>
+                </svg>
+                تعديل
+              </button>
+              <button class="action-btn delete-btn" @click="deleteExpense(row)">
+                <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"
+                    clip-rule="evenodd"
+                  ></path>
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                حذف
+              </button>
+            </template>
+          </compoTable>
+        </div>
+        <!-- التنقل بين الصفحات -->
+        <div class="pagination-section">
+          <button
+            class="pagination-btn"
+            :disabled="pageNumber === 1"
+            @click="prevPage"
+          >
+            <svg
+              class="pagination-icon"
+              fill="currentColor"
+              viewBox="0 0 20 20"
             >
-              <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"></path>
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-              </svg>
-              حذف
-            </button>
-          </template>
-        </compoTable>
-      </div>
-      <!-- التنقل بين الصفحات -->
-      <div class="pagination-section">
-        <button
-          class="pagination-btn"
-          :disabled="pageNumber === 1"
-          @click="prevPage"
-        >
-          <svg class="pagination-icon" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-          </svg>
-          السابق
-        </button>
-        
-        <div class="pagination-info">
-          صفحة {{ pageNumber }} من {{ totalPages }}
+              <path
+                fill-rule="evenodd"
+                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            السابق
+          </button>
+
+          <div class="pagination-info">
+            صفحة {{ pageNumber }} من {{ totalPages }}
+          </div>
+
+          <button
+            class="pagination-btn"
+            :disabled="pageNumber === totalPages"
+            @click="nextPage"
+          >
+            التالي
+            <svg
+              class="pagination-icon"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </button>
         </div>
-        
-        <button
-          class="pagination-btn"
-          :disabled="pageNumber === totalPages"
-          @click="nextPage"
-        >
-          التالي
-          <svg class="pagination-icon" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-          </svg>
-        </button>
-      </div>
-    </main>
+      </main>
 
- <compoAddDialog
-  v-model="showDialog"
-  :title="selectedExpense ? 'تعديل مصروف' : 'إضافة مصروف'"
->
-  <formExpense
-    :modelValue="selectedExpense"
-    @saved="handleSaved"
-  />
-</compoAddDialog>
-
-  </div>
+      <compoAddDialog
+        v-model="showDialog"
+        :title="selectedExpense ? 'تعديل مصروف' : 'إضافة مصروف'"
+      >
+        <formExpense :modelValue="selectedExpense" @saved="handleSaved" />
+      </compoAddDialog>
+    </div>
   </Dashboard>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import compoTable from '../../components/compoTable.vue';
-import compoAddDialog from '../../components/compoAddDialog.vue';
-import formExpense from '../Expenses/formExpense.vue';
-import { _get ,_delete } from '../../api/axois';
-import Dashboard from '../../components/dashboard.vue';
+import { ref, onMounted } from "vue";
+import compoTable from "../../components/compoTable.vue";
+import compoAddDialog from "../../components/compoAddDialog.vue";
+import formExpense from "../Expenses/formExpense.vue";
+import { _get, _delete } from "../../api/axois";
+import Dashboard from "../../components/dashboard.vue";
 
 const Expenses = ref([]);
 const loading = ref(false);
@@ -118,36 +143,32 @@ const selectedExpense = ref(null);
 const showDialog = ref(false);
 
 const columns = [
-  { key: 'expenseTypeName', label: 'نوع المصروف' },
-  { key: 'description', label: 'الوصف' },
-  { key: 'amount', label: 'المبلغ' },
-  { key: 'expenseDate', label: 'تاريخ الصرف' },
-  { key: 'userName', label: 'المستخدم' }
+  { key: "expenseTypeName", label: "نوع المصروف" },
+  { key: "description", label: "الوصف" },
+  { key: "amount", label: "المبلغ" },
+  { key: "expenseDate", label: "تاريخ الصرف" },
+  { key: "userName", label: "المستخدم" },
 ];
 
 // دالة جلب المصاريف
 const fetchExpenses = async () => {
   loading.value = true;
   try {
-    const res = await _get('/api/Expenses', {
+    const res = await _get("/api/Expenses", {
       params: {
         pageNumber: pageNumber.value,
-        pageSize: pageSize.value
-      }
+        pageSize: pageSize.value,
+      },
     });
 
-    Expenses.value = res.data.data;   
+    Expenses.value = res.data.data;
     totalPages.value = res.data.totalPages;
-  } 
-  catch (error) {
+  } catch (error) {
     console.error(error);
-  } 
-  finally {
+  } finally {
     loading.value = false;
   }
 };
-
-
 const prevPage = () => {
   if (pageNumber.value > 1) {
     pageNumber.value--;
@@ -167,19 +188,18 @@ const nextPage = () => {
 //   // هنا تفتح Dialog أو صفحة تعديل
 // };
 
-
 const deleteExpense = async (expense) => {
   const confirmed = confirm(`هل أنت متأكد من حذف ${expense.expenseTypeName}؟`);
   if (!confirmed) return;
 
   try {
-        const res = await _delete(`/api/Expenses/${expense.expenseId}`);
+    const res = await _delete(`/api/Expenses/${expense.expenseId}`);
     if (res.status === 200 || res.status === 204) {
       alert("تم حذف المصروف بنجاح ✅");
       fetchExpenses();
     } else {
       console.error("خطأ من السيرفر:", res.data);
-      alert(`فشل حذف المصروف ❌\n${res.data?.message || 'حدث خطأ غير معروف'}`);
+      alert(`فشل حذف المصروف ❌\n${res.data?.message || "حدث خطأ غير معروف"}`);
     }
   } catch (error) {
     console.error("حدث خطأ أثناء الحذف:", error);
@@ -202,7 +222,6 @@ const handleSaved = () => {
   fetchExpenses();
 };
 
-
 onMounted(() => {
   fetchExpenses();
 });
@@ -211,13 +230,13 @@ onMounted(() => {
 <style scoped>
 /* الحاوية الرئيسية */
 .doctors-container {
- background-color: var(--color-gray-100);
+  background-color: var(--color-gray-100);
   font-family: var(--font-primary);
 }
 
 /* هيدر الصفحة */
 .page-header {
- background-color: var(--color-white);
+  background-color: var(--color-white);
   border-bottom: 3px solid var(--color-accent-500);
 }
 
@@ -399,30 +418,30 @@ onMounted(() => {
     text-align: center;
     gap: 16px;
   }
-  
+
   .main-content {
     padding: 16px;
   }
-  
+
   .page-title {
     font-size: 24px;
   }
-  
+
   .add-btn {
     padding: 10px 16px;
     font-size: 13px;
   }
-  
+
   .stat-card {
     max-width: 100%;
   }
-  
+
   .action-btn {
     padding: 6px 10px;
     font-size: 12px;
     min-width: 70px;
   }
-  
+
   .pagination-section {
     flex-direction: column;
     gap: 12px;

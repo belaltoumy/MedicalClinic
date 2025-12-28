@@ -14,6 +14,12 @@
         إدارة حسابات الاطباء
       </router-link>
     </li>
+    <li>
+      <router-link to="/doctor-withdrawals" class="nav-link">
+        <i class="fas fa-user-shield icon"></i>
+        إدارة سحوبات الأطباء 
+      </router-link>
+    </li>
 
     <li>
       <router-link to="/materials" class="nav-link">
@@ -103,7 +109,7 @@ const userStore = dataUserStore();
   font-size: 17px;
   color: white;
   font-weight: bold;
-  padding: 12px 20px;
+  padding: 10px 15px;
   border-radius: 6px;
   display: flex; /* لتمكين المحاذاة الأفقية */
   align-items: center;

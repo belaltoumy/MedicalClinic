@@ -1,6 +1,6 @@
 <template>
   <Dashboard>
-  <div class="doctors-container" dir="rtl">
+  <div class="drawals-container" dir="rtl">
     <!-- الهيدر -->
     <header class="page-header">
       <div class="header-content">
@@ -11,7 +11,7 @@
             </svg>
           </div>
           <div class="title-text">
-            <h1 class="page-title">إدارة الأطباء</h1>
+            <h1 class="page-title">إدارة سحوبات الأطباء</h1>
           </div>
         </div>
         
@@ -22,33 +22,73 @@
           <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
           </svg>
-          إضافة طبيب جديد
+          إضافة سحب جديد 
         </button>
       </div>
     </header>
+<!-- فلاتر البحث -->
+<div class="filters-section">
+  <!-- اختيار الطبيب -->
+  <div class="filter-item">
+    <inputSelect v-model="filters.doctorId" label="الطبيب" class="filter-input">
+      <option
+        v-for="doc in doctors"
+        :key="doc.doctorId"
+        :value="doc.doctorId"
+      >
+        {{ doc.fullName }}
+      </option>
+    </inputSelect>
+  </div>
+
+  <!-- من تاريخ -->
+  <div class="filter-item">
+    <inputDate
+      type="date"
+      v-model="filters.startDate"
+      class="filter-input"
+    />
+  </div>
+
+  <!-- إلى تاريخ -->
+  <div class="filter-item">
+    <inputDate
+      type="date"
+      v-model="filters.endDate"
+      class="filter-input"
+    />
+  </div>
+
+  <!-- زر بحث -->
+  <div class="filter-actions">
+    <button class="filter-btn" @click="applyFilters">
+      بحث
+    </button>
+
+    <button class="filter-btn clear" @click="resetFilters">
+      مسح
+    </button>
+  </div>
+</div>
 
     <!-- المحتوى الرئيسي -->
     <main class="main-content">
-   
-
       <!-- الجدول -->
       <div class="table-section">
         <compoTable
           :columns="columns"
-          :rows="doctors"
+          :rows="drawDoctors"
           :loading="loading"
           :showActions="true"
         >
+       <template #cell:withdrawalDate="{ row }">
+  {{ formatDate(row.withdrawalDate) }}
+</template>
           <template #actions="{ row }">
+            
             <button
               class="action-btn edit-btn"
-              @click="viewDrawal(row)"
-            >
-              عرض السحوبات
-            </button>
-            <button
-              class="action-btn edit-btn"
-              @click="editDoctor(row)"
+              @click="editDrawal(row)"
             >
               <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
@@ -57,7 +97,7 @@
             </button>
             <button
               class="action-btn delete-btn"
-              @click="deleteDoctor(row)"
+              @click="deleteDrawal(row)"
             >
               <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"></path>
@@ -98,75 +138,15 @@
         </button>
       </div>
     </main>
-    <compoDialog
-  v-model="showWithdrawalsDialog"
-  :title="`السحوبات للطبيب: ${selectedDoctor?.fullName || ''}`"
-  width="900px"
->
-  <!-- حالة التحميل -->
-  <div v-if="withdrawalsLoading" class="p-4 text-center">
-    جاري تحميل السحوبات...
-  </div>
-
-  <!-- المحتوى -->
-  <div v-else>
-    <!-- في حال ما في بيانات -->
-    <div v-if="withdrawals.length === 0" class="p-4 text-center">
-      لا يوجد سحوبات لهذا الطبيب
-    </div>
-
-    <!-- في حال في بيانات -->
-    <div v-else>
-      <!-- معلومات الرصيد -->
-   <div class="summary-wrapper">
-  <div class="summary-item">
-    <span>إجمالي السحوبات</span>
-    <strong>
-      {{ withdrawals[withdrawals.length - 1]?.totalWithdrawn }}
-    </strong>
-  </div>
-
-  <div class="summary-item">
-    <span>الرصيد المتبقي</span>
-    <strong
-      :class="withdrawals[withdrawals.length - 1]?.remainingBalance < 0
-        ? 'danger'
-        : 'success'"
-    >
-      {{ withdrawals[withdrawals.length - 1]?.remainingBalance }}
-    </strong>
-  </div>
-</div>
-
-
-
-      <!-- جدول السحوبات -->
-      <compoTable
-        :columns="[
-          { key: 'amount', label: 'قيمة السحب' },
-          { key: 'withdrawalDate', label: 'التاريخ' },
-          { key: 'notes', label: 'ملاحظات' }
-        ]"
-        :rows="withdrawals"
-        :showActions="false"
-      >
-        <template #cell:withdrawalDate="{ row }">
-          {{ new Date(row.withdrawalDate).toLocaleDateString('en-GB') }}
-        </template>
-      </compoTable>
-    </div>
-  </div>
-</compoDialog>
-
     <!--  نافذة الاضافة والتعديل -->
     <compoAddDialog
   v-model="showDialogForm"
-  :title="dialogMode === 'add' ? 'إضافة طبيب جديد' : 'تعديل بيانات الطبيب'"
+  :title="dialogMode === 'add' ? 'إضافة سحب جديد' : 'تعديل بيانات السحب'"
 >
-  <formDoctor
+  <formDrawal
     :mode="dialogMode"
     :doctor="selectedDoctor"
-    @saved="handleUserAdded"
+    @saved="handleDrawAdded"
   />
 </compoAddDialog>
 
@@ -178,17 +158,14 @@
 import { ref, onMounted } from 'vue';
 import compoTable from '../../components/compoTable.vue';
 import compoAddDialog from '../../components/compoAddDialog.vue';
-import compoDialog from '../../components/compoDialog.vue';
 import Dashboard from '../../components/dashboard.vue';
+import { _get, _delete } from '../../api/axois';
+import formDrawal from './formDrawal.vue';
+import inputSelect from '../../components/inputSelect.vue';
+import inputDate from '../../components/inputDate.vue';
 import useToast from '../../toast/toast.js';
 const { showToast } = useToast();
-
-
-import formDoctor from './formDoctor.vue';
-
-import { _get, _delete } from '../../api/axois';
-
-const doctors = ref([]);
+const drawDoctors = ref([]);
 const loading = ref(false);
 
 const pageNumber = ref(1);
@@ -198,113 +175,160 @@ const showDialogForm = ref(false);
 const dialogMode = ref("add"); // add | edit
 const selectedDoctor = ref(null);
 
-const showWithdrawalsDialog = ref(false);
-const withdrawals = ref([]);
-const withdrawalsLoading = ref(false);
-
+const doctors = ref([]);
 const columns = [
-  { key: 'fullName', label: 'اسم الطبيب' },
-  { key: 'percentage', label: 'النسبة (%)' },
-  { key: 'description', label: 'الوصف' }
+  { key: 'doctorName', label: 'اسم الطبيب' },
+  { key: 'amount', label: 'القيمة' },
+  { key: 'withdrawalDate', label: 'تاريخ السحب' },
+  { key: 'notes', label: 'الوصف' }
 ];
 
-// دالة جلب الأطباء
+const filters = ref({
+  doctorId: "",
+  startDate: "",
+  endDate: "",
+});
+
 const fetchDoctors = async () => {
+  const res = await _get("/api/Doctors", {
+    params: { all: true },
+  });
+
+   doctors.value = res.data.data;
+};
+// دالة  جميع السحوبات
+const fetchDrawDoctors = async () => {
   loading.value = true;
   try {
-    const res = await _get('/api/Doctors', {
+    const res = await _get('/api/DoctorWithdrawals', {
       params: {
         pageNumber: pageNumber.value,
         pageSize: pageSize.value
       }
     });
 
-    doctors.value = res.data.data;
+    drawDoctors.value = res.data.data;
     totalPages.value = res.data.totalPages;
   } catch (error) {
-    showToast('خطأ في جلب بيانات الأطباء', 'error');
+    console.error(error);
   } finally {
     loading.value = false;
   }
 };
 
+const applyFilters = async () => {
+  loading.value = true;
+  pageNumber.value = 1;
+
+  try {
+    const res = await _get("/api/DoctorWithdrawals/ByDateRange", {
+      params: {
+        startDate: filters.value.startDate,
+        endDate: filters.value.endDate,
+        DoctorId: filters.value.doctorId || null,
+        pageNumber: pageNumber.value,
+        pageSize: pageSize.value,
+      },
+    });
+
+    drawDoctors.value = res.data.data;
+    totalPages.value = res.data.totalPages;
+  } catch (error) {
+    console.error(error);
+    showToast("فشل جلب البيانات", "error");
+  } finally {
+    loading.value = false;
+  }
+};
+
+const resetFilters = () => {
+  filters.value = {
+    doctorId: "",
+    startDate: "",
+    endDate: "",
+  };
+
+  pageNumber.value = 1;
+  fetchDrawDoctors();
+};
+
 const prevPage = () => {
   if (pageNumber.value > 1) {
     pageNumber.value--;
-    fetchDoctors();
+    fetchDrawDoctors();
   }
 };
 
 const nextPage = () => {
   if (pageNumber.value < totalPages.value) {
     pageNumber.value++;
-    fetchDoctors();
+    fetchDrawDoctors();
   }
 };
 
-const viewDrawal = async (doctor) => {
-  selectedDoctor.value = doctor;
-  showWithdrawalsDialog.value = true;
-  await fetchDoctorWithdrawals(doctor.doctorId);
-};
 
-const editDoctor = (doctor) => {
+const editDrawal = (row) => {
   dialogMode.value = "edit";
-  selectedDoctor.value = { ...doctor }; // نسخة آمنة
+  selectedDoctor.value = { ...row };
   showDialogForm.value = true;
 };
 
 
-const deleteDoctor = async (doctor) => {
-  const confirmed = confirm(`هل أنت متأكد من حذف ${doctor.fullName}؟`);
+const deleteDrawal = async (row) => {
+  const confirmed = confirm(
+    `هل أنت متأكد من حذف سحب الطبيب ${row.doctorName} ؟`
+  );
   if (!confirmed) return;
 
   try {
-    const res = await _delete(`/api/Doctors/${doctor.doctorId}`);
+    loading.value = true;
 
-    if (res.status === 200 || res.status === 204) {
-      showToast('تم حذف الطبيب بنجاح', 'success');
-      fetchDoctors();
-    } else {
-      showToast('فشل حذف الطبيب', 'error');
+    await _delete(`/api/DoctorWithdrawals/${row.withdrawalId}`);
+
+    alert("تم حذف السحب بنجاح ✅");
+
+    // في حال حذف آخر عنصر بالصفحة
+    if (drawDoctors.value.length === 1 && pageNumber.value > 1) {
+      pageNumber.value--;
     }
+
+    fetchDrawDoctors();
   } catch (error) {
-    showToast('فشل حذف الطبيب', 'error');
+    console.error("خطأ أثناء الحذف:", error);
+    alert("فشل حذف السحب ❌");
+  } finally {
+    loading.value = false;
   }
 };
+
+
 const openAddDialog = () => {
   dialogMode.value = "add";
   selectedDoctor.value = null;
   showDialogForm.value = true;
 };
 
-const fetchDoctorWithdrawals = async (doctorId) => {
-  withdrawalsLoading.value = true;
-  try {
-    const res = await _get(
-      `/api/DoctorWithdrawals/WithBalance/${doctorId}`
-    );
-    withdrawals.value = res.data;
-  } catch (error) {
-    showToast('فشل جلب السحوبات', 'error');
-  } finally {
-    withdrawalsLoading.value = false;
-  }
+
+
+function handleDrawAdded() {
+  showDialogForm.value = false;
+  fetchDrawDoctors(); // لتحديث الجدول بعد الإضافة
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleDateString("en-GB");
 };
 
-
-function handleUserAdded() {
-  showDialogForm.value = false;
-  fetchDoctors(); // لتحديث الجدول بعد الإضافة
-}
 onMounted(() => {
+  fetchDrawDoctors();
   fetchDoctors();
 });
 </script>
 
 <style scoped>
 /* الحاوية الرئيسية */
-.doctors-container {
+.drawals-container {
 min-height: 100vh;
   background-color: var(--color-gray-100);
   font-family: var(--font-primary);
@@ -525,52 +549,82 @@ min-height: 100vh;
     gap: 12px;
   }
 }
-.summary-wrapper {
-  display: flex;
-  justify-content: center;   /* ⬅️ بالنص */
-  align-items: center;
-  gap: 40px;
-  background: #f8fafc;
-  padding: 16px 24px;
-  border-radius: 14px;
-  margin-bottom: 18px;
+.filters-section {
+  max-width: 1200px;
+  margin: 5px auto 0;
+  padding: 15px;
+  background: var(--color-white);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 5px;
 }
 
-.summary-item {
+/* كل عنصر فلترة */
+.filter-item {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  min-width: 160px;
-  font-size: 15px;
 }
 
-.summary-item span {
-  color: #64748b;
-  font-size: 13px;
+/* الحقول */
+.filter-input {
+  width: 100%;
 }
 
-.summary-item strong {
-  font-size: 18px;
-  margin-top: 4px;
+.filter-actions {
+  grid-column: span 3;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
 }
 
-.success {
-  color: #16a34a;
+/* زر صغير */
+.filter-btn {
+  background: var(--color-primary-700);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 6px 16px;       
+  font-weight: 600;
+  font-size: 13px;         
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 70px;
 }
 
-.danger {
-  color: #dc2626;
+.filter-btn:hover {
+  background: var(--color-primary-900);
+  transform: translateY(-1px);
 }
 
-/* موبايل */
-@media (max-width: 640px) {
-  .summary-wrapper {
-    gap: 16px;
-    padding: 14px;
+/* زر المسح */
+.filter-btn.clear {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.filter-btn.clear:hover {
+  background: #d1d5db;
+}
+@media (max-width: 900px) {
+  .filters-section {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .summary-item strong {
-    font-size: 16px;
+  .filter-actions {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 500px) {
+  .filters-section {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-actions {
+    grid-column: span 1;
   }
 }
 

@@ -31,13 +31,7 @@
     <!-- حالة عدم وجود بيانات -->
     <div v-else-if="!props.rows || props.rows.length === 0" class="empty-state">
       <div class="empty-icon">
-        <svg fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-            clip-rule="evenodd"
-          ></path>
-        </svg>
+       
       </div>
       <p class="empty-text">{{ emptyText }}</p>
     </div>
@@ -179,12 +173,10 @@ const filteredRows = computed(() => {
 </script>
 
 <style scoped>
- /* =========================
-   الحاوية الرئيسية
-========================= */
+
 .table-container {
   width: 100%;
-  height: 75vh;
+  max-height: 75vh;
   background: white;
   border-radius: 16px;
   border: 1px solid #f1f5f9;
@@ -194,27 +186,18 @@ const filteredRows = computed(() => {
   overflow: hidden;
 }
 
-/* =========================
-   Wrapper للسكرول
-========================= */
 .table-wrapper {
   flex: 1;
   overflow-x: auto;
   overflow-y: auto;
 }
 
-/* =========================
-   الجدول
-========================= */
 .data-table {
   width: 100%;
   border-collapse: collapse;
   min-width: 700px; /* 🔑 يمنع تكسير الأعمدة */
 }
 
-/* =========================
-   رأس الجدول
-========================= */
 .table-header {
   background: var(--color-primary-700);
 }
@@ -241,9 +224,6 @@ const filteredRows = computed(() => {
   width: 100px;
 }
 
-/* =========================
-   جسم الجدول
-========================= */
 .table-body {
   background: white;
 }
@@ -256,9 +236,6 @@ const filteredRows = computed(() => {
   background: #f8fafc;
 }
 
-/* =========================
-   خلايا البيانات
-========================= */
 .table-row td {
   padding: 8px 6px;
   text-align: center;
@@ -273,9 +250,6 @@ const filteredRows = computed(() => {
   background: #eff6ff;
 }
 
-/* =========================
-   خلية الإجراءات (الحل الأساسي)
-========================= */
 .actions-cell {
   text-align: center;
 }
@@ -301,9 +275,6 @@ const filteredRows = computed(() => {
   transform: translateY(-1px);
 }
 
-/* =========================
-   Dropdown filter
-========================= */
 .column-title {
   position: relative;
   display: inline-flex;
@@ -321,6 +292,7 @@ const filteredRows = computed(() => {
 }
 
 .dropdown-menu {
+  color: var(--color-primary-700);
   position: absolute;
   top: 110%;
   left: 50%;
@@ -350,9 +322,35 @@ const filteredRows = computed(() => {
   cursor: pointer;
 }
 
-/* =========================
-   الموبايل (الحل الذكي)
-========================= */
+.loading-text {
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-primary-700);
+  text-align: center;
+}
+.loading-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.empty-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #64748b;
+}
+
 @media (max-width: 768px) {
   .data-table {
     min-width: 600px;

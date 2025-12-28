@@ -29,6 +29,41 @@
           </button>
         </div>
       </header>
+<!-- فلاتر البحث -->
+<div class="search-filters">
+  <!-- حسب النوع -->
+  <div class="filter-item">
+    <InputSelect label="نوع الزيارة" v-model="filters.type" class="input">
+      <option value="0">أولية</option>
+      <option value="1">مراجعة</option>
+    </InputSelect>
+  </div>
+
+  <!-- حسب الحالة -->
+  <div class="filter-item">
+    <InputSelect label="الحالة" v-model="filters.status" class="input">
+      <option value="0">مدخلة</option>
+      <option value="1">قيد الانتظار</option>
+    </InputSelect>
+  </div>
+
+  <!-- من تاريخ -->
+  <div class="filter-item">
+    <inputDate label="من تاريخ" v-model="filters.fromDate" class="input" />
+  </div>
+
+  <!-- إلى تاريخ -->
+  <div class="filter-item">
+    <inputDate label="إلى تاريخ" v-model="filters.toDate" class="input" />
+  </div>
+
+  <!-- أزرار -->
+  <div class="filter-actions">
+    <button class="search-btn" @click="searchVisits">
+      بحث
+    </button>
+  </div>
+</div>
 
       <!-- المحتوى الرئيسي -->
       <main class="main-content">
@@ -60,6 +95,7 @@
                 </svg>
                 اضافة دفعة
               </button>
+              
               <button
                 class="action-btn delete-btn"
                 @click="deleteVisit(row.visitId)"
@@ -130,6 +166,7 @@
           @subVisitAdded="fetchVisits"
         />
       </compoDialog>
+      
       <compoAddDialog v-model="showDialogPayment" title="إضافة دفعة">
         <addNewPayment
           :visit-id="selectedVisitId"
@@ -151,6 +188,9 @@ import compoAddDialog from "../components/compoAddDialog.vue";
 import addNewVisit from "../components/addNewVisit.vue";
 import addNewPayment from "../components/addNewPayment.vue";
 import Dashboard from "../components/dashboard.vue";
+import InputSelect from "../components/InputSelect.vue";
+import inputText from "../components/inputText.vue";
+import inputDate from "../components/inputDate.vue";
 // بيانات الجدول
 const visites = ref([]);
 const loading = ref(false);
@@ -161,6 +201,13 @@ const selectedVisitId = ref(null);
 const showDialogPayment = ref(false);
 const selectedPatientId = ref(null);
 
+const isSearching = ref(false);
+const filters = ref({
+  type: "",
+  status: "",
+  fromDate: "",
+  toDate: "",
+});
 const openAddPayment = (row) => {
   selectedVisitId.value = row.visitId;
   selectedPatientId.value = row.patientId;
@@ -205,20 +252,54 @@ const fetchVisits = async () => {
   }
 };
 
+const searchVisits = async () => {
+  try {
+    loading.value = true;
+    pageNumber.value = 1;
+    isSearching.value = true;
+
+    const params = new URLSearchParams({
+      pageNumber: pageNumber.value,
+      pageSize: pageSize.value,
+    });
+
+    if (filters.value.type !== "") params.append("type", filters.value.type);
+    if (filters.value.status !== "") params.append("status", filters.value.status);
+    if (filters.value.fromDate) params.append("fromDate", filters.value.fromDate);
+    if (filters.value.toDate) params.append("toDate", filters.value.toDate);
+
+    const res = await _get(`/api/Visit/search?${params.toString()}`);
+
+    visites.value = res.data.data.map((v) => ({
+      ...v,
+      visitDate: formatDate(v.visitDate),
+    }));
+
+    pageNumber.value = res.data.pageNumber;
+    totalPages.value = res.data.totalPages;
+    pageSize.value = res.data.pageSize;
+  } catch (err) {
+    console.error("خطأ البحث:", err);
+  } finally {
+    loading.value = false;
+  }
+};
+
 // وظائف التنقل بين الصفحات
 const prevPage = () => {
   if (pageNumber.value > 1) {
     pageNumber.value--;
-    fetchVisits();
+    isSearching.value ? searchVisits() : fetchVisits();
   }
 };
 
 const nextPage = () => {
   if (pageNumber.value < totalPages.value) {
     pageNumber.value++;
-    fetchVisits();
+    isSearching.value ? searchVisits() : fetchVisits();
   }
 };
+
 
 // تعديل الدالة اللي بتفتح التفاصيل
 const viewDetailsVisit = (row) => {
@@ -330,6 +411,50 @@ onMounted(() => {
 .btn-icon {
   width: 18px;
   height: 18px;
+}
+
+.search-filters {
+  background: white;
+  padding: 16px;
+  border-radius: 14px;
+  margin: 16px auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  align-items: end;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-actions {
+  display: flex;
+  align-items: flex-end;
+}
+
+.search-btn {
+  background: var(--color-primary-700);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* موبايل */
+@media (max-width: 900px) {
+  .search-filters {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .search-filters {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* المحتوى الرئيسي */

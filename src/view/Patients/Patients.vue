@@ -19,7 +19,7 @@
             </div>
           </div>
 
-<button @click="openAddDialog" class="add-btn">
+          <button @click="openAddDialog" class="add-btn">
             <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fill-rule="evenodd"
@@ -125,17 +125,16 @@
           </button>
         </div>
       </main>
-     <compoAddDialog
-  v-model="showDialogAdd"
-  :title="editMode ? 'تعديل مريض' : 'إضافة مريض جديد'"
->
-  <formPatient
-    :editMode="editMode"
-    :editData="editData"
-    @saved="handleUserAdded"
-  />
-</compoAddDialog>
-
+      <compoAddDialog
+        v-model="showDialogAdd"
+        :title="editMode ? 'تعديل مريض' : 'إضافة مريض جديد'"
+      >
+        <formPatient
+          :editMode="editMode"
+          :editData="editData"
+          @saved="handleUserAdded"
+        />
+      </compoAddDialog>
     </div>
 
     <!-- كومبو الزيارات -->
@@ -370,7 +369,6 @@ const editPatient = (patient) => {
   showDialogAdd.value = true;
 };
 
-
 const viewVisits = async (patient) => {
   try {
     loading.value = true;
@@ -412,7 +410,7 @@ const deletePatient = async (patient) => {
       showToast("تم حذف المريض بنجاح ", "success");
       fetchPatients();
     } else {
-      showToast(`فشل حذف المريض \n${res.data?.message }`, "error");
+      showToast(`فشل حذف المريض \n${res.data?.message}`, "error");
     }
   } catch (error) {
     showToast("فشل حذف المريض ", "error");
