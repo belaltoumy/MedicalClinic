@@ -180,17 +180,17 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import CompoTable from "../components/compoTable.vue";
-import ViewDetailsVisitDialog from "../components/viewDetailsVisit.vue";
-import { _get, _delete } from "../api/axois";
-import compoDialog from "../components/compoDialog.vue";
-import compoAddDialog from "../components/compoAddDialog.vue";
-import addNewVisit from "../components/addNewVisit.vue";
-import addNewPayment from "../components/addNewPayment.vue";
-import Dashboard from "../components/dashboard.vue";
-import InputSelect from "../components/InputSelect.vue";
-import inputText from "../components/inputText.vue";
-import inputDate from "../components/inputDate.vue";
+import CompoTable from "../../components/CompoTable.vue";
+import ViewDetailsVisitDialog from "../Visit/viewDetailsVisit.vue";
+import { _get, _delete } from "../../api/axois";
+import compoDialog from "../../components/compoDialog.vue";
+import compoAddDialog from "../../components/compoAddDialog.vue";
+import addNewVisit from "../../components/addNewVisit.vue";
+import addNewPayment from "../../components/addNewPayment.vue";
+import Dashboard from "../../components/Dashboard.vue";
+import InputSelect from "../../components/InputSelect.vue";
+import inputText from "../../components/inputText.vue";
+import inputDate from "../../components/inputDate.vue";
 // بيانات الجدول
 const visites = ref([]);
 const loading = ref(false);
@@ -301,7 +301,7 @@ const nextPage = () => {
 };
 
 
-// تعديل الدالة اللي بتفتح التفاصيل
+//  الدالة اللي بتفتح التفاصيل
 const viewDetailsVisit = (row) => {
   selectedVisitId.value = row.visitId; // افترض إن الـ id موجود في الـ row باسم visitId
   showDialogDetails.value = true;
@@ -310,7 +310,7 @@ const viewDetailsVisit = (row) => {
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   const day = date.getDate();
-  const month = date.getMonth() + 1; // لأن الأشهر تبدأ من 0
+  const month = date.getMonth() + 1; 
   const year = date.getFullYear();
 
   return `${day}/${month}/${year}`;
@@ -471,7 +471,7 @@ onMounted(() => {
 .action-btn {
   border: none;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 6px 6px;
   font-weight: 500;
   font-size: 13px;
   cursor: pointer;
@@ -479,10 +479,9 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  min-width: 80px;
+  min-width: 70px;
   justify-content: center;
 }
-
 .edit-btn {
   background: var(--color-primary-700);
   color: white;

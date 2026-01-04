@@ -4,6 +4,7 @@
       type="date"
       id="dateInput"
       v-model="inputValue"
+      required
       @focus="isFocused = true"
       @blur="isFocused = inputValue ? true : false"
       @input="emit('update:modelValue', inputValue)"
@@ -62,11 +63,11 @@ label {
 }
 
 input {
-  font-size: 17px;
+  font-size: 14px;
   color: #555;
   outline: none;
   border: 1px solid #bbb;
-  padding: 12px 10px;
+  padding: 8px 10px;
   border-radius: 7px;
   width: 100%;
   transition: border-color 0.2s ease;
@@ -79,9 +80,20 @@ input:focus {
 
 /* وضعية الـ label العائم */
 .label-float {
-  top: 0px;
+  top: -2px;
   background-color: white;
-  font-size: 12px;
+  font-size: 11px;
   color: #5e7324;
 }
+/* إخفاء النص الافتراضي */
+input[type="date"] {
+  color: transparent;
+}
+
+/* إظهار التاريخ بعد الاختيار */
+input[type="date"]:focus,
+input[type="date"]:valid {
+  color: #555;
+}
+
 </style>

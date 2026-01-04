@@ -70,10 +70,9 @@
         <button class="add-subvisit-btn" @click="showPaymentsDialog = true">
           تفاصيل الدفعات
         </button>
-       <button class="add-subvisit-btn" @click="openAddProcedureDialog">
-  تعديل عناصر الزيارة  
+        <button class="add-subvisit-btn" @click="openAddProcedureDialog">
+  اضافة اجراء للزيارة  
 </button>
-
       </div>
       <!-- Dialog إضافة زيارة فرعية -->
       <compoAddDialog v-model="showSubVisitDialog" title="إضافة زيارة مراجعة">
@@ -112,19 +111,19 @@
         <PaymentDetails :patientId="visit.patientId" />
       </compoDialog>
 
-     <compoDialog v-model="showAddProVisitDialog" title="تعديل الاجراء">
-  <addProcedureVisit
-  :visitId="visit.visitId"
-  :visitItems="visit.visitItems"
-  @saved="onProcedureAdded"
-/>
-
-</compoDialog>
-
+      <compoDialog v-model="showAddProVisitDialog" title="تعديل الاجراء">
+        <addProcedureVisit
+          :visitId="visit.visitId"
+          :visitItems="visit.visitItems"
+          @saved="onProcedureAdded"
+        />
+      </compoDialog>
 
       <!-- عناصر الزيارة -->
       <div class="mt-12">
-        <h3 class="text-2xl font-bold mb-6 text-indigo-700 text-right">
+        <h3
+          class="text-2xl font-bold mb-2 text-[var(--color-primary-700)] text-center"
+        >
           عناصر الزيارة
         </h3>
         <div
@@ -132,15 +131,14 @@
           class="overflow-x-auto rounded-lg shadow-lg border border-gray-200"
         >
           <table class="min-w-full bg-white">
-            <thead
-              class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
-            >
+            <thead class="bg-[var(--color-primary-700)] text-white">
               <tr>
-                <th class="px-6 py-4 text-center">#</th>
-                <th class="px-6 py-4 text-center">الإجراء الطبي</th>
-                <th class="px-6 py-4 text-center">التكلفة</th>
-                <th class="px-6 py-4 text-center">المواد المستهلكة</th>
-                <th class="px-6 py-4 text-center">الكمية</th>
+                <th class="px-4 py-2 text-center">#</th>
+                <th class="px-4 py-2 text-center">الإجراء الطبي</th>
+                <th class="px-4 py-2 text-center">التكلفة</th>
+                <th class="px-4 py-2 text-center">المواد المستهلكة</th>
+                <th class="px-4 py-2 text-center">الكمية</th>
+                <th class="px-4 py-2 text-center">الإجراءات</th>
               </tr>
             </thead>
 
@@ -150,12 +148,12 @@
                 :key="item.visitItemId"
                 class="hover:bg-gray-50"
               >
-                <td class="px-6 py-4 text-center">{{ index + 1 }}</td>
-                <td class="px-6 py-4">{{ item.procedureName }}</td>
-                <td class="px-6 py-4">{{ item.cost }}</td>
+                <td class="px-4 py-2 text-center">{{ index + 1 }}</td>
+                <td class="px-4 py-2">{{ item.procedureName }}</td>
+                <td class="px-4 py-2">{{ item.cost }}</td>
 
                 <!-- المواد المستهلكة -->
-                <td class="px-6 py-4">
+                <td class="px-4 py-2">
                   <div
                     v-for="mat in item.materialConsumptions"
                     :key="mat.consumptionId"
@@ -165,13 +163,21 @@
                 </td>
 
                 <!-- الكميات -->
-                <td class="px-6 py-4 text-center">
+                <td class="px-4 py-2 text-center">
                   <div
                     v-for="mat in item.materialConsumptions"
                     :key="mat.consumptionId"
                   >
                     {{ mat.quantity }}
                   </div>
+                </td>
+                <td class="px-4 py-2 text-center">
+                  <button
+                    class="action-btn edit-btn"
+                    @click="openAddProcedureDialog"
+                  >
+                    تعديل عناصر الزيارة
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -188,7 +194,7 @@
 
       <!-- الزيارات الفرعية -->
       <div class="mt-12">
-        <h3 class="text-2xl font-bold text-right mb-6 text-indigo-700">
+        <h3 class="text-2xl font-bold text-[var(--color-primary-700)] mb-4 text-center">
           الزيارات الفرعية
         </h3>
 
@@ -199,14 +205,14 @@
           <table class="min-w-full bg-white visit-table">
             <thead class="visit-table-head">
               <tr>
-                <th class="px-6 py-4 text-center">رقم الزيارة</th>
-                <th class="px-6 py-4 text-center">اسم المريض</th>
-                <th class="px-6 py-4 text-center">اسم الطبيب</th>
-                <th class="px-6 py-4 text-center">تاريخ الزيارة</th>
-                <th class="px-6 py-4 text-center">التكلفة</th>
-                <th class="px-6 py-4 text-center">نوع الزيارة</th>
-                <th class="px-6 py-4 text-center">الحالة</th>
-                <th class="px-6 py-4 text-center">إجراءات</th>
+                <th class="px-4 py-2 text-center">رقم الزيارة</th>
+                <th class="px-4 py-2 text-center">اسم المريض</th>
+                <th class="px-4 py-2 text-center">اسم الطبيب</th>
+                <th class="px-4 py-2 text-center">تاريخ الزيارة</th>
+                <th class="px-4 py-2 text-center">التكلفة</th>
+                <th class="px-4 py-2 text-center">نوع الزيارة</th>
+                <th class="px-4 py-2 text-center">الحالة</th>
+                <th class="px-4 py-2 text-center">إجراءات</th>
               </tr>
             </thead>
 
@@ -216,13 +222,12 @@
                 :key="sub.visitId"
                 class="hover:bg-gray-50 transition"
               >
-                <td class="px-6 py-4 text-center">{{ index + 1 }}</td>
-                <td class="px-6 py-4">{{ sub.patientFullName }}</td>
-                <td class="px-6 py-4">{{ sub.doctorName }}</td>
-                <td class="px-6 py-4">{{ formatDate(sub.visitDate) }}</td>
-                <td class="px-6 py-4">{{ sub.totalCost }}</td>
-
-                <td class="px-6 py-4">
+                <td class="px-4 py-2 text-center">{{ index + 1 }}</td>
+                <td class="px-4 py-2">{{ visit.patientFullName }}</td>
+                <td class="px-4 py-2">{{ visit.doctorName }}</td>
+                <td class="px-4 py-2">{{ formatDate(sub.visitDate) }}</td>
+                <td class="px-4 py-2">{{ sub.totalCost }}</td>
+                <td class="px-4 py-2">
                   <span
                     class="px-3 py-1 rounded-full text-xs font-medium"
                     :class="
@@ -235,7 +240,7 @@
                   </span>
                 </td>
 
-                <td class="px-6 py-4">
+                <td class="px-4 py-2">
                   <span
                     class="px-3 py-1 rounded-full text-xs font-medium"
                     :class="
@@ -248,7 +253,7 @@
                   </span>
                 </td>
 
-                <td class="px-6 py-4 text-center">
+                <td class="px-4 py-2 text-center">
                   <button
                     @click="openSubVisitDetails(sub.visitId)"
                     class="text-blue-600 hover:text-blue-900 font-medium text-sm"
@@ -289,15 +294,16 @@
 
 <script setup>
 import { ref, watch, onMounted } from "vue";
-import { _get, _post, _delete } from "../api/axois";
-import compoDialog from "./compoDialog.vue";
-import compoAddDialog from "./compoAddDialog.vue";
-import InputSelect from "./InputSelect.vue";
-import PaymentDetails from "./viewDetailsPayment.vue";
-import addProcedureVisit from "./addProcedureVisit.vue";
+import { _get, _post, _delete } from "../../api/axois";
+import compoDialog from "../../components/compoDialog.vue";
+import compoAddDialog from "../../components/compoAddDialog.vue";
+import InputSelect from "../../components/InputSelect.vue";
+import PaymentDetails from "../../components/DetailsPayment.vue";
+import addProcedureVisit from "../../components/addProcedureVisit.vue";
+import useToast from "../../toast/toast";
+const { showToast } = useToast();
 
 const showAddProVisitDialog = ref(false);
-
 const showPaymentsDialog = ref(false);
 
 const props = defineProps({
@@ -328,7 +334,8 @@ const fetchVisitDetails = async () => {
   try {
     const res = await _get(`/api/Visit/FullDetails/${props.visitId}`);
     visit.value = res.data;
-    subVisitForm.value.parentVisitId = visit.value.visitId; // مهم جدًا
+    subVisitForm.value.parentVisitId = visit.value.visitId;
+    console.log(subVisitForm.value);
   } catch (err) {
     error.value = "فشل تحميل تفاصيل الزيارة";
     console.error(err);
@@ -359,8 +366,6 @@ const onProcedureAdded = () => {
   fetchVisitDetails(); // يرجّع العناصر الجديدة
 };
 
-
-
 const openAddProcedureDialog = () => {
   showAddProVisitDialog.value = true;
 };
@@ -368,7 +373,7 @@ const openAddProcedureDialog = () => {
 // إضافة زيارة فرعية
 const addSubVisit = async () => {
   if (!subVisitForm.value.doctorId) {
-    alert("يرجى اختيار الطبيب");
+    showToast("يرجى اختيار الطبيب", "error");
     return;
   }
   try {
@@ -378,13 +383,11 @@ const addSubVisit = async () => {
     });
 
     showSubVisitDialog.value = false;
-    alert("تم إضافة زيارة المراجعة بنجاح");
-    // إرسال إشارة للكومبوننت الأب لتحديث الجدول
+    showToast("تم إضافة زيارة المراجعة بنجاح", "success");
     emit("subVisitAdded");
     fetchVisitDetails();
   } catch (err) {
-    console.error(err);
-    alert("حدث خطأ أثناء إضافة زيارة المراجعة");
+    showToast("حدث خطأ أثناء إضافة زيارة المراجعة", "error");
   }
 };
 
@@ -394,11 +397,10 @@ const deleteSubVisit = async (id) => {
 
   try {
     await _delete(`/api/Visit/${id}`);
-    alert("تم حذف الزيارة الفرعية بنجاح");
+    showToast("تم حذف الزيارة الفرعية بنجاح", "success");
     fetchVisitDetails();
   } catch (err) {
-    console.error(err);
-    alert("حدث خطأ أثناء عملية الحذف");
+    showToast("حدث خطأ أثناء عملية الحذف", "error");
   }
 };
 
@@ -422,7 +424,7 @@ const formatDate = (dateString) => {
 
 <style scoped>
 .details-container {
-  padding: 24px;
+  padding: 15px;
   font-family: var(--font-primary);
 }
 .info-box {
@@ -459,6 +461,30 @@ const formatDate = (dateString) => {
   font-family: var(--font-secondary);
 }
 
+/* أزرار الإجراءات */
+.action-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 6px;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 70px;
+  justify-content: center;
+}
+.edit-btn {
+  background: var(--color-primary-700);
+  color: white;
+  box-shadow: var(--color-primary-900);
+}
+.edit-btn:hover {
+  background: var(--color-primary-900);
+  transform: translateY(-1px);
+}
 /* Pending */
 .status-pill.pending {
   background: rgba(56, 189, 248, 0.18);

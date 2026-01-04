@@ -64,9 +64,9 @@
       </main>
 
       <!-- نافذة الإضافة -->
-      <compoDialog v-model="showDialogAdd" title="إضافة مستخدم جديد">
+      <compoAddDialog v-model="showDialogAdd" title="إضافة مستخدم جديد">
         <AddNewUser @saved="handleUserAdded" />
-      </compoDialog>
+      </compoAddDialog>
     </div>
   </Dashboard>
 </template>
@@ -76,7 +76,7 @@ import { ref, computed, watch, onMounted } from "vue";
 import CompoTable from "../../components/compoTable.vue";
 import AddNewUser from "../Users/addNewUser.vue";
 import { _get, _delete } from "../../api/axois";
-import compoDialog from "../../components/compoDialog.vue";
+import compoAddDialog from "../../components/compoAddDialog.vue";
 import Dashboard from "../../components/dashboard.vue";
 import useToast from "../../toast/toast.js";
 

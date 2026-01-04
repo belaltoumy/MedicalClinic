@@ -96,7 +96,7 @@
         </button>
       </div>
     </main>
-    <compoDialog v-model="showEditDialog" title="تعديل الدفعة">
+    <compoAddDialog v-model="showEditDialog" title="تعديل الدفعة">
       <input-number label="المبلغ" v-model="editPaymentData.amount" />
 
       <input-select label="طريقة الدفع" v-model="editPaymentData.type">
@@ -106,7 +106,7 @@
       </input-select>
 
       <button class="add-btn" @click="updatePayment">حفظ التعديلات</button>
-    </compoDialog>
+    </compoAddDialog>
   </div>
   </Dashboard>
 </template>
@@ -115,7 +115,7 @@
 import Dashboard from "../components/dashboard.vue";
 import { ref, onMounted, computed } from "vue";
 import compoTable from "../components/compoTable.vue";
-import compoDialog from "../components/compoDialog.vue";
+import compoAddDialog from "../components/compoAddDialog.vue";
 import inputNumber from "../components/inputNumber.vue";
 import inputSelect from "../components/InputSelect.vue";
 import { _get, _delete, _put } from "../api/axois";
@@ -330,7 +330,7 @@ onMounted(() => {
 .action-btn {
   border: none;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 6px 6px;
   font-weight: 500;
   font-size: 13px;
   cursor: pointer;
@@ -338,9 +338,10 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  min-width: 80px;
+  min-width: 70px;
   justify-content: center;
 }
+
 
 .edit-btn {
   background: var(--color-primary-700);

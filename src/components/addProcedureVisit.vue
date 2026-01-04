@@ -8,9 +8,11 @@
     >
       <!-- الإجراء -->
       <InputSelect v-model="item.procedureId" label="الإجراء">
-        <option v-for="p in procedures" :key="p.id" :value="p.id">
-          {{ p.name }}
-        </option>
+    
+        <option v-for="p in procedures" :key="p.procedureId" :value="p.procedureId">
+  {{ p.name }}
+</option>
+
       </InputSelect>
 
       <!-- التكلفة -->
@@ -23,9 +25,10 @@
         class="grid grid-cols-2 gap-3"
       >
         <InputSelect v-model="m.materialId" label="المادة">
-          <option v-for="mat in materials" :key="mat.id" :value="mat.id">
-            {{ mat.name }}
-          </option>
+          <option v-for="mat in materials" :key="mat.materialId" :value="mat.materialId">
+  {{ mat.name }}
+</option>
+
         </InputSelect>
 
         <inputNumber label="الكمية" v-model="m.quantity" />
@@ -38,15 +41,13 @@
 
   </div>
 </template>
-
-
-
-
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import { _get, _put } from "../api/axois";
 import InputSelect from "./InputSelect.vue";
 import inputNumber from "./inputNumber.vue";
+import useToast from "../toast/toast";
+const { showToast } = useToast();
 
 const props = defineProps({
   visitId: { type: String, required: true },
@@ -80,19 +81,18 @@ watch(
   () => props.visitItems,
   (val) => {
     items.value = val.map(item => ({
-      visitItemId: item.visitItemId,       // ❗ موجود
+      visitItemId: item.visitItemId,
       procedureId: item.procedureId,
       cost: item.cost,
       materialConsumptions: item.materialConsumptions.map(m => ({
-        consumptionId: m.consumptionId,   // ❗ موجود
-        materialId: m.materialId,
+        consumptionId: m.consumptionId,
+        materialId: m.materialId, 
         quantity: m.quantity
       }))
     }));
   },
   { immediate: true }
 );
-
 /* حفظ التعديلات فقط */
 const save = async () => {
   try {
@@ -100,13 +100,15 @@ const save = async () => {
       visitId: props.visitId,
       visitItems: items.value // ❗ نفس العناصر مع نفس IDs
     };
+console.log(items.value);
 
     await _put(`/api/Visit/${props.visitId}`, payload);
     emit("saved");
+    showToast("تم تعديل عناصر الزيارة بنجاح", "success");
 
   } catch (err) {
     console.error(err);
-    alert("فشل تعديل عناصر الزيارة");
+    showToast("فشل تعديل عناصر الزيارة", "error");
   }
 };
 

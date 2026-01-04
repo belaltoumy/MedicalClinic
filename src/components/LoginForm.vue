@@ -14,7 +14,6 @@
           <label class="input-label">البريد الالكتروني</label>
           <div class="input-wrapper">
             <i class="fa-solid fa-envelope icon"></i>
-
             <input
               type="email"
               v-model="user.email"
@@ -115,9 +114,6 @@ const loginApi = async (obj) => {
 </script>
 
 <style scoped>
-  /* ===============================
-   الحاوية الرئيسية
-================================ */
 .login-container {
   min-height: 100vh;
   display: flex;
@@ -140,9 +136,6 @@ const loginApi = async (obj) => {
   animation: cardEnter 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
 }
 
-/* ===============================
-   الهيدر
-================================ */
 .header-section {
   display: flex;
   flex-direction: column;
@@ -176,9 +169,6 @@ const loginApi = async (obj) => {
   margin: 0;
 }
 
-/* ===============================
-   الفورم
-================================ */
 .form-section {
   display: flex;
   flex-direction: column;
@@ -244,10 +234,6 @@ const loginApi = async (obj) => {
   border-color: var(--color-secondary-500);
   box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
 }
-
-/* ===============================
-   checkbox
-================================ */
 .checkbox-container {
   display: flex;
   align-items: center;
@@ -263,10 +249,6 @@ const loginApi = async (obj) => {
   cursor: pointer;
   accent-color: var(--color-secondary-500);
 }
-
-/* ===============================
-   زر الدخول
-================================ */
 .btn-primary {
   margin-top: 10px;
   width: 100%;
@@ -299,9 +281,6 @@ const loginApi = async (obj) => {
   cursor: not-allowed;
 }
 
-/* ===============================
-   الفوتر
-================================ */
 .footer-section {
   margin-top: 26px;
   padding-top: 18px;
@@ -325,10 +304,6 @@ const loginApi = async (obj) => {
 .forgot-password-link:hover {
   text-decoration: underline;
 }
-
-/* ===============================
-   Animations
-================================ */
 @keyframes cardEnter {
   0% {
     opacity: 0;

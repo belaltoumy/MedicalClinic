@@ -147,16 +147,14 @@
           class="overflow-x-auto rounded-lg shadow-lg border border-gray-200"
         >
           <table class="min-w-full bg-white">
-            <thead
-              class="bg-linear-to-r from-indigo-600 to-purple-600 text-white"
-            >
+            <thead class="bg-[var(--color-primary-700)] text-white">
               <tr>
-                <th class="px-6 py-4 text-center">تاريخ الزيارة</th>
-                <th class="px-6 py-4 text-center">الطبيب</th>
-                <th class="px-6 py-4 text-center">التكلفة</th>
-                <th class="px-6 py-4 text-center">الاجراء</th>
+                <th class="px-4 py-2 text-center">تاريخ الزيارة</th>
+                <th class="px-4 py-2 text-center">الطبيب</th>
+                <th class="px-4 py-2 text-center">التكلفة</th>
+                <th class="px-4 py-2 text-center">الاجراء</th>
 
-                <th class="px-6 py-4 text-center">تفاصيل</th>
+                <th class="px-4 py-2 text-center">تفاصيل</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -168,12 +166,12 @@
                 <td class="px-6 py-4 text-center">
                   {{ new Date(v.visitDate).toLocaleDateString("ar-EG") }}
                 </td>
-                <td class="px-6 py-4 text-center">{{ v.doctorName }}</td>
-                <td class="px-6 py-4 text-center">{{ v.totalCost }}</td>
-                <td class="px-6 py-4 text-center">
+                <td class="px-4 py-2 text-center">{{ v.doctorName }}</td>
+                <td class="px-4 py-2 text-center">{{ v.totalCost }}</td>
+                <td class="px-4 py-2 text-center">
                   {{ v.visitItems?.[0]?.procedureName || "—" }}
                 </td>
-                <td class="px-6 py-4 text-center">
+                <td class="px-4 py-2 text-center">
                   <div class="flex justify-center gap-2">
                     <button class="action-btn view-btn" @click="openItems(v)">
                       المواد المستخدمة
@@ -205,70 +203,78 @@
     <!-- كومبو المواد -->
     <compoDialog v-model="showItemsDialog" title="المواد المستخدمة">
       <div v-if="selectedItems.length">
-        <table
-          class="min-w-full text-right border border-gray-300 rounded-lg overflow-hidden"
+        <div
+          class="overflow-x-auto rounded-lg shadow-lg border border-gray-200"
         >
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-4 py-2 border">اسم المادة</th>
-              <th class="px-4 py-2 border">الكمية</th>
-              <th class="px-4 py-2 border">السعر</th>
-              <th class="px-4 py-2 border">الإجمالي</th>
-            </tr>
-          </thead>
+          <table class="min-w-full bg-white">
+            <thead class="bg-[var(--color-primary-700)] text-white">
+              <tr>
+                <th class="px-4 py-2 text-center">اسم المادة</th>
+                <th class="px-4 py-2 text-center">الكمية</th>
+                <th class="px-4 py-2 text-center">السعر</th>
+                <th class="px-4 py-2 text-center">الإجمالي</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr
-              v-for="it in selectedItems"
-              :key="it.itemId"
-              class="hover:bg-gray-50"
-            >
-              <td class="px-4 py-2 border">{{ it.materialName }}</td>
-              <td class="px-4 py-2 border">{{ it.quantity }}</td>
-              <td class="px-4 py-2 border">{{ it.unitPrice }}</td>
-              <td class="px-4 py-2 border">{{ it.totalCost }}</td>
-            </tr>
-          </tbody>
-        </table>
+            <tbody class="divide-y divide-gray-200">
+              <tr
+                v-for="it in selectedItems"
+                :key="it.itemId"
+                class="hover:bg-gray-50"
+              >
+                <td class="px-4 py-2 text-center">{{ it.materialName }}</td>
+                <td class="px-4 py-2 text-center">{{ it.quantity }}</td>
+                <td class="px-4 py-2 text-center">{{ it.unitPrice }}</td>
+                <td class="px-4 py-2 text-center font-semibold">
+                  {{ it.totalCost }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+
       <div v-else class="text-center text-gray-500 py-4">
         لا توجد مواد مسجلة
       </div>
     </compoDialog>
+
     <!-- كومبو الدفعات -->
     <compoDialog v-model="showPaymentsDialog" title="الدفعات">
-      <div v-if="selectedPayments.length" class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-300 rounded-lg">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-4 py-3 border text-center">#</th>
-              <th class="px-4 py-3 border text-center">تاريخ الدفعة</th>
-              <th class="px-4 py-3 border text-center">المبلغ</th>
-            </tr>
-          </thead>
+      <div v-if="selectedPayments.length">
+        <div
+          class="overflow-x-auto rounded-lg shadow-lg border border-gray-200"
+        >
+          <table class="min-w-full bg-white">
+            <thead class="bg-[var(--color-primary-700)] text-white">
+              <tr>
+                <th class="px-4 py-2 text-center">#</th>
+                <th class="px-4 py-2 text-center">تاريخ الدفعة</th>
+                <th class="px-4 py-2 text-center">المبلغ</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr
-              v-for="(p, index) in selectedPayments"
-              :key="p.paymentId"
-              class="hover:bg-gray-50"
-            >
-              <td class="px-4 py-2 border text-center">
-                {{ index + 1 }}
-              </td>
-
-              <td class="px-4 py-2 border text-center">
-                {{ new Date(p.paymentDate).toLocaleDateString("en-US") }}
-              </td>
-
-              <td
-                class="px-4 py-2 border text-center font-semibold text-green-600"
+            <tbody class="divide-y divide-gray-200">
+              <tr
+                v-for="(p, index) in selectedPayments"
+                :key="p.paymentId"
+                class="hover:bg-gray-50"
               >
-                {{ p.amount }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                <td class="px-4 py-2 text-center">
+                  {{ index + 1 }}
+                </td>
+
+                <td class="px-4 py-2 text-center">
+                  {{ new Date(p.paymentDate).toLocaleDateString("ar-EG") }}
+                </td>
+
+                <td class="px-4 py-2 text-center font-semibold text-green-600">
+                  {{ p.amount }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div v-else class="text-center text-gray-500 py-4">لا توجد دفعات</div>
@@ -548,7 +554,7 @@ onMounted(() => {
 .action-btn {
   border: none;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 6px 6px;
   font-weight: 500;
   font-size: 13px;
   cursor: pointer;
@@ -556,9 +562,10 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  min-width: 80px;
+  min-width: 70px;
   justify-content: center;
 }
+
 
 .view-btn {
   background: var(--color-primary-700);

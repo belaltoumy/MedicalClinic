@@ -44,6 +44,7 @@
   <!-- من تاريخ -->
   <div class="filter-item">
     <inputDate
+    label="من تاريخ"
       type="date"
       v-model="filters.startDate"
       class="filter-input"
@@ -53,6 +54,7 @@
   <!-- إلى تاريخ -->
   <div class="filter-item">
     <inputDate
+    label="إلى تاريخ"
       type="date"
       v-model="filters.endDate"
       class="filter-input"
@@ -226,13 +228,11 @@ const applyFilters = async () => {
         startDate: filters.value.startDate,
         endDate: filters.value.endDate,
         DoctorId: filters.value.doctorId || null,
-        pageNumber: pageNumber.value,
-        pageSize: pageSize.value,
       },
     });
 
-    drawDoctors.value = res.data.data;
-    totalPages.value = res.data.totalPages;
+    drawDoctors.value = res.data; // ✅ array مباشر
+    totalPages.value = 1;         // لأنه بدون pagination
   } catch (error) {
     console.error(error);
     showToast("فشل جلب البيانات", "error");
@@ -240,6 +240,7 @@ const applyFilters = async () => {
     loading.value = false;
   }
 };
+
 
 const resetFilters = () => {
   filters.value = {
@@ -419,7 +420,7 @@ min-height: 100vh;
 .action-btn {
   border: none;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 6px 6px;
   font-weight: 500;
   font-size: 13px;
   cursor: pointer;
@@ -427,7 +428,7 @@ min-height: 100vh;
   display: flex;
   align-items: center;
   gap: 6px;
-  min-width: 80px;
+  min-width: 70px;
   justify-content: center;
 }
 
