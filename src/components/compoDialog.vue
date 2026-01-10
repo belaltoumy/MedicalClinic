@@ -2,7 +2,7 @@
   <Transition name="fade">
     <div v-if="modelValue" class="dialog">
       <div class="dialog-content animate-slideIn" 
-           style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+           style="font-family: var(--font-primary);">
         
         <!-- زر الإغلاق -->
         <button
@@ -59,9 +59,6 @@ const close = () => {
   animation: slideIn 0.3s ease;
 }
 
-/* --------------------- */
-/*   تصميم الديالوج      */
-/* --------------------- */
 .dialog {
   direction: rtl;
   position: fixed;
@@ -84,9 +81,9 @@ const close = () => {
   background: white;
   padding: 20px;
   border-radius: 12px;
-  width: 50%;
+  width: 60%;
   max-width: 95vw;
-  max-height: 70vh;
+  max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   animation: slideIn 0.3s ease-in-out;

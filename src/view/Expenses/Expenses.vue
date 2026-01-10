@@ -132,6 +132,8 @@ import compoAddDialog from "../../components/compoAddDialog.vue";
 import formExpense from "../Expenses/formExpense.vue";
 import { _get, _delete } from "../../api/axois";
 import Dashboard from "../../components/dashboard.vue";
+import useToast from "../../toast/toast";
+const { showToast } = useToast();
 
 const Expenses = ref([]);
 const loading = ref(false);
@@ -195,15 +197,13 @@ const deleteExpense = async (expense) => {
   try {
     const res = await _delete(`/api/Expenses/${expense.expenseId}`);
     if (res.status === 200 || res.status === 204) {
-      alert("تم حذف المصروف بنجاح ✅");
+      showToast("تم حذف المصروف بنجاح", "success");
       fetchExpenses();
     } else {
-      console.error("خطأ من السيرفر:", res.data);
-      alert(`فشل حذف المصروف ❌\n${res.data?.message || "حدث خطأ غير معروف"}`);
+      showToast(`فشل حذف المصروف`, "error");
     }
   } catch (error) {
-    console.error("حدث خطأ أثناء الحذف:", error);
-    alert("فشل حذف الاجراء ❌");
+    showToast("فشل حذف الاجراء ", "error");
   }
 };
 

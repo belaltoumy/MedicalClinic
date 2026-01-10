@@ -285,9 +285,7 @@ const deleteDrawal = async (row) => {
     loading.value = true;
 
     await _delete(`/api/DoctorWithdrawals/${row.withdrawalId}`);
-
-    alert("تم حذف السحب بنجاح ✅");
-
+    showToast("تم حذف السحب بنجاح ", "success");
     // في حال حذف آخر عنصر بالصفحة
     if (drawDoctors.value.length === 1 && pageNumber.value > 1) {
       pageNumber.value--;
@@ -295,8 +293,7 @@ const deleteDrawal = async (row) => {
 
     fetchDrawDoctors();
   } catch (error) {
-    console.error("خطأ أثناء الحذف:", error);
-    alert("فشل حذف السحب ❌");
+    showToast("فشل حذف السحب", "error");
   } finally {
     loading.value = false;
   }

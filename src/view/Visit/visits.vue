@@ -191,6 +191,8 @@ import Dashboard from "../../components/Dashboard.vue";
 import InputSelect from "../../components/InputSelect.vue";
 import inputText from "../../components/inputText.vue";
 import inputDate from "../../components/inputDate.vue";
+import useToast from "../../toast/toast";
+const { showToast } = useToast();
 // بيانات الجدول
 const visites = ref([]);
 const loading = ref(false);
@@ -322,11 +324,10 @@ const deleteVisit = async (id) => {
 
   try {
     await _delete(`/api/Visit/${id}`);
-    alert("تم حذف الزيارة  بنجاح");
+    showToast("تم حذف الزيارة بنجاح", "success");
     fetchVisits();
   } catch (err) {
-    console.error(err);
-    alert("حدث خطأ أثناء عملية الحذف");
+    showToast("حدث خطأ أثناء عملية الحذف", "error");
   }
 };
 const handleVisitAdded = () => {

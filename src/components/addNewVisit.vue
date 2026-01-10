@@ -42,7 +42,8 @@
 import { ref, onMounted } from "vue";
 import { _get, _post } from "../api/axois";
 import InputSelect from "./InputSelect.vue";
-
+import useToast from "../toast/toast";
+const { showToast } = useToast();
 const emit = defineEmits(["saved"]);
 
 const doctors = ref([]);
@@ -76,7 +77,7 @@ const addVisit = async () => {
     !formVisit.value.doctorId ||
     formVisit.value.status === ""
   ) {
-    alert("الرجاء تعبئة جميع الحقول");
+    showToast("الرجاء تعبئة جميع الحقول", "error");
     return;
   }
 
@@ -95,7 +96,7 @@ formVisit.value = {
   status: "",
   visitParentId: null,
 };
-  alert("✅ تمت إضافة الزيارة بنجاح");
+  showToast("تمت إضافة الزيارة بنجاح", "success");
 };
 
 onMounted(() => {

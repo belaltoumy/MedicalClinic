@@ -37,6 +37,8 @@ import inputNumber from "./inputNumber.vue";
 import InputSelect from "./InputSelect.vue";
 import { ref } from "vue";
 import { _post } from "../api/axois";
+import useToast from "../toast/toast";
+const { showToast } = useToast();
 
 const emit = defineEmits(["paymentAdded"]);
 
@@ -63,7 +65,7 @@ const newPayment = ref({
 // ✅ دالة الإضافة
 const addNewPayment = async () => {
   if (!newPayment.value.amount || newPayment.value.amount <= 0) {
-    alert("الرجاء إدخال مبلغ صحيح");
+    showToast("الرجاء إدخال مبلغ صحيح", "error");
     return;
   }
 
@@ -72,12 +74,10 @@ const addNewPayment = async () => {
 
     await _post("/api/Payments", newPayment.value);
 
-    alert("✅ تمت إضافة الدفعة بنجاح");
-
+    showToast("تمت إضافة الدفعة بنجاح", "success");
     emit("paymentAdded"); // نحدث الجدول
   } catch (error) {
-    console.error(error);
-    alert("❌ حدث خطأ أثناء الإضافة");
+    showToast("حدث خطأ أثناء إضافة الدفعة", "error");
   } finally {
     isLoading.value = false;
   }

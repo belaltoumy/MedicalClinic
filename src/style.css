@@ -4,8 +4,9 @@
 @theme {
   /* Fonts */
 
-  --font-primary: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
-  --font-secondary: 'Tajawal', sans-serif;
+--font-primary: 'Tajawal', 'Inter', 'Segoe UI', sans-serif;
+--font-secondary: 'Tajawal', sans-serif;
+
 
   /* Primary */
   --color-primary-900: #0F172A;

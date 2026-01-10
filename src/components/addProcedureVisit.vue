@@ -18,21 +18,43 @@
       <!-- التكلفة -->
       <inputNumber label="التكلفة" v-model="item.cost" />
 
-      <!-- المواد -->
-      <div
-        v-for="m in item.materialConsumptions"
-        :key="m.consumptionId"
-        class="grid grid-cols-2 gap-3"
-      >
-        <InputSelect v-model="m.materialId" label="المادة">
-          <option v-for="mat in materials" :key="mat.materialId" :value="mat.materialId">
-  {{ mat.name }}
-</option>
+     <!-- المواد -->
+<div
+  v-for="(m, mi) in item.materialConsumptions"
+  :key="m.consumptionId || mi"
+  class="grid grid-cols-2 gap-3 items-end"
+>
+  <InputSelect v-model="m.materialId" label="المادة">
+    <option
+      v-for="mat in materials"
+      :key="mat.materialId"
+      :value="mat.materialId"
+    >
+      {{ mat.name }}
+    </option>
+  </InputSelect>
 
-        </InputSelect>
+  <div class="flex gap-2">
+    <inputNumber label="الكمية" v-model="m.quantity" />
 
-        <inputNumber label="الكمية" v-model="m.quantity" />
-      </div>
+    <button
+      type="button"
+      class="text-red-500 text-sm"
+      @click="removeMaterial(item, mi)"
+    >
+      حذف
+    </button>
+  </div>
+</div>
+
+<button
+  type="button"
+  class="text-sm text-primary-600 hover:underline"
+  @click="addMaterial(item)"
+>
+  + إضافة مادة أخرى
+</button>
+
     </div>
 
     <div class="flex justify-end">
@@ -43,7 +65,7 @@
 </template>
 <script setup>
 import { ref, watch, onMounted } from "vue";
-import { _get, _put } from "../api/axois";
+import { _get, _put, _delete } from "../api/axois";
 import InputSelect from "./InputSelect.vue";
 import inputNumber from "./inputNumber.vue";
 import useToast from "../toast/toast";
@@ -60,9 +82,10 @@ const procedures = ref([]);
 const materials = ref([]);
 
 /**
- * نسخة قابلة للتعديل فقط
- * بدون إضافة عناصر جديدة
+  نسخة قابلة للتعديل فقط
+  بدون إضافة عناصر جديدة
  */
+
 const items = ref([]);
 
 /* جلب البيانات */
@@ -75,6 +98,38 @@ const fetchMaterials = async () => {
   const res = await _get("/api/Materials", { params: { all: true } });
   materials.value = res.data.data;
 };
+
+const addMaterial = (item) => {
+  item.materialConsumptions.push({
+    consumptionId: null,   // جديد
+    materialId: null,
+    quantity: 1
+  });
+};
+
+const removeMaterial = async (item, index) => {
+  const material = item.materialConsumptions[index];
+
+  //  مادة جديدة (لم تُحفظ بعد)
+  if (!material.consumptionId) {
+    item.materialConsumptions.splice(index, 1);
+    return;
+  }
+
+  //  مادة موجودة في قاعدة البيانات
+  try {
+    await _delete(`/api/Visit/Material/${material.consumptionId}`);
+
+    // حذفها من الواجهة بعد نجاح الحذف
+    item.materialConsumptions.splice(index, 1);
+
+    showToast("تم حذف المادة بنجاح", "success");
+  } catch (err) {
+    console.error(err);
+    showToast("فشل حذف المادة", "error");
+  }
+};
+
 
 /* نسخ العناصر القادمة من الأب */
 watch(
@@ -103,6 +158,8 @@ const save = async () => {
 console.log(items.value);
 
     await _put(`/api/Visit/${props.visitId}`, payload);
+    console.log(payload);
+    
     emit("saved");
     showToast("تم تعديل عناصر الزيارة بنجاح", "success");
 

@@ -4,20 +4,49 @@
   </div>
 
   <div v-else-if="details">
-    <div class="mb-4 space-y-1 text-sm">
-      <p><strong>اسم المريض:</strong> {{ details.fullName }}</p>
-      <p><strong>الهاتف:</strong> {{ details.phone }}</p>
-      <p><strong>الإيميل:</strong> {{ details.email }}</p>
-      <p class="text-indigo-700 font-bold">
-        مجموع الدفعات: {{ details.totalPaid }}
-      </p>
-      <p class="text-green-700 font-bold">
-        التكلفة الكلية: {{ details.totalCost }}
-      </p>
-      <p class="text-red-600 font-bold">
-        المتبقي: {{ details.remainingCost }}
-      </p>
-    </div>
+    <!-- معلومات المريض -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+  <div class="bg-gray-50 border rounded-lg p-4">
+    <p class="text-xs text-gray-500 mb-1">اسم المريض</p>
+    <p class="font-semibold text-gray-800">{{ details.fullName }}</p>
+  </div>
+
+  <div class="bg-gray-50 border rounded-lg p-4">
+    <p class="text-xs text-gray-500 mb-1">رقم الهاتف</p>
+    <p class="font-semibold text-gray-800">{{ details.phone || "—" }}</p>
+  </div>
+
+  <div class="bg-gray-50 border rounded-lg p-4 md:col-span-2">
+    <p class="text-xs text-gray-500 mb-1">البريد الإلكتروني</p>
+    <p class="font-semibold text-gray-800">
+      {{ details.email || "—" }}
+    </p>
+  </div>
+</div>
+
+<!-- الملخص المالي -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-center">
+    <p class="text-sm text-indigo-600">مجموع الدفعات</p>
+    <p class="text-xl font-bold text-indigo-700">
+      {{ details.totalPaid }}
+    </p>
+  </div>
+
+  <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+    <p class="text-sm text-green-600">التكلفة الكلية</p>
+    <p class="text-xl font-bold text-green-700">
+      {{ details.totalCost }}
+    </p>
+  </div>
+
+  <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+    <p class="text-sm text-red-600">المتبقي</p>
+    <p class="text-xl font-bold text-red-700">
+      {{ details.remainingCost }}
+    </p>
+  </div>
+</div>
 
     <table class="min-w-full border mt-4">
       <thead class="bg-gray-200">

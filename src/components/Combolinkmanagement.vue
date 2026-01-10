@@ -92,7 +92,7 @@ const userStore = dataUserStore();
 <style scoped>
 .main-nav {
   background-color: wh;
-  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-family: var(--font-primary);
   font-size: 20px;
   list-style: none;
   padding: 0;

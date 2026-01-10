@@ -1,7 +1,7 @@
 <template>
   <div
     class="flex flex-col items-center text-center p-10 pt-5 pb-5 max-w-sm mx-auto rounded-xl shadow-xl"
-    style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"
+    style="font-family: var(--font-primary);"
   >
     <!-- الصورة الشخصية -->
     <div

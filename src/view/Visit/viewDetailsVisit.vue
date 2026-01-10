@@ -56,7 +56,7 @@
       </div>
 
       <div class="mt-8 flex justify-center gap-4">
-        <button @click="openAddSubVisitDialog" class="add-subvisit-btn">
+        <button @click="addSubVisit" class="add-subvisit-btn">
           <svg class="btn-icon" fill="currentColor" viewBox="0 0 20 20">
             <path
               fill-rule="evenodd"
@@ -64,48 +64,16 @@
               clip-rule="evenodd"
             ></path>
           </svg>
-          إضافة زيارة مراجعة (فرعية)
+          إضافة زيارة مراجعة
         </button>
 
         <button class="add-subvisit-btn" @click="showPaymentsDialog = true">
           تفاصيل الدفعات
         </button>
-        <button class="add-subvisit-btn" @click="openAddProcedureDialog">
+        <!-- <button class="add-subvisit-btn" @click="openUpdateProcedureDialog">
   اضافة اجراء للزيارة  
-</button>
+</button> -->
       </div>
-      <!-- Dialog إضافة زيارة فرعية -->
-      <compoAddDialog v-model="showSubVisitDialog" title="إضافة زيارة مراجعة">
-        <div class="space-y-5">
-          <InputSelect
-            v-model="subVisitForm.doctorId"
-            label="اختر الطبيب"
-            required
-          >
-            <option
-              v-for="doc in doctors"
-              :key="doc.doctorId"
-              :value="doc.doctorId"
-            >
-              {{ doc.fullName }}
-            </option>
-          </InputSelect>
-
-          <div class="flex gap-3 justify-end mt-6">
-            <button
-              @click="addSubVisit"
-              class="add-btn"
-              :disabled="!subVisitForm.doctorId"
-            >
-              حفظ زيارة المراجعة
-            </button>
-
-            <button @click="showSubVisitDialog = false" class="cancel-btn">
-              إلغاء
-            </button>
-          </div>
-        </div>
-      </compoAddDialog>
 
       <compoDialog v-model="showPaymentsDialog" title="تفاصيل الدفعات">
         <PaymentDetails :patientId="visit.patientId" />
@@ -174,7 +142,7 @@
                 <td class="px-4 py-2 text-center">
                   <button
                     class="action-btn edit-btn"
-                    @click="openAddProcedureDialog"
+                    @click="openUpdateProcedureDialog"
                   >
                     تعديل عناصر الزيارة
                   </button>
@@ -194,7 +162,9 @@
 
       <!-- الزيارات الفرعية -->
       <div class="mt-12">
-        <h3 class="text-2xl font-bold text-[var(--color-primary-700)] mb-4 text-center">
+        <h3
+          class="text-2xl font-bold text-[var(--color-primary-700)] mb-4 text-center"
+        >
           الزيارات الفرعية
         </h3>
 
@@ -254,12 +224,12 @@
                 </td>
 
                 <td class="px-4 py-2 text-center">
-                  <button
-                    @click="openSubVisitDetails(sub.visitId)"
+                  <!-- <button
+                    @click="openUpdateProcedureDialog"
                     class="text-blue-600 hover:text-blue-900 font-medium text-sm"
                   >
                     تعديل
-                  </button>
+                  </button> -->
 
                   <button
                     @click="deleteSubVisit(sub.visitId)"
@@ -318,14 +288,10 @@ const emit = defineEmits(["subVisitAdded"]); // لتحديث الجدول الخ
 const visit = ref(null);
 const loading = ref(false);
 const error = ref(null);
-const showSubVisitDialog = ref(false);
 
-const doctors = ref([]);
 const subVisitForm = ref({
   parentVisitId: "",
-  doctorId: "",
 });
-
 // جلب تفاصيل الزيارة
 const fetchVisitDetails = async () => {
   if (!props.visitId) return;
@@ -344,49 +310,30 @@ const fetchVisitDetails = async () => {
   }
 };
 
-// جلب قائمة الأطباء
-const fetchDoctors = async () => {
-  try {
-    const res = await _get("/api/Doctors", { params: { all: true } });
-    doctors.value = res.data.data;
-  } catch (err) {
-    console.error("فشل جلب الأطباء", err);
-  }
-};
-
-// فتح الديالوغ
-const openAddSubVisitDialog = () => {
-  subVisitForm.value.parentVisitId = visit.value.visitId;
-  subVisitForm.value.doctorId = "";
-  showSubVisitDialog.value = true;
-};
-
 const onProcedureAdded = () => {
   showAddProVisitDialog.value = false;
   fetchVisitDetails(); // يرجّع العناصر الجديدة
 };
 
-const openAddProcedureDialog = () => {
+const openUpdateProcedureDialog = () => {
   showAddProVisitDialog.value = true;
 };
 
 // إضافة زيارة فرعية
 const addSubVisit = async () => {
-  if (!subVisitForm.value.doctorId) {
-    showToast("يرجى اختيار الطبيب", "error");
-    return;
-  }
+  if (!visit.value?.visitId) return;
+
   try {
     await _post("/api/Visit/FollowUp", {
-      parentVisitId: subVisitForm.value.parentVisitId,
-      doctorId: subVisitForm.value.doctorId,
+      parentVisitId: visit.value.visitId
     });
 
-    showSubVisitDialog.value = false;
     showToast("تم إضافة زيارة المراجعة بنجاح", "success");
     emit("subVisitAdded");
     fetchVisitDetails();
+
   } catch (err) {
+    console.error(err);
     showToast("حدث خطأ أثناء إضافة زيارة المراجعة", "error");
   }
 };
@@ -407,7 +354,6 @@ const deleteSubVisit = async (id) => {
 // تحديث عند تغيير visitId
 watch(() => props.visitId, fetchVisitDetails, { immediate: true });
 onMounted(() => {
-  fetchDoctors();
   if (props.visitId) fetchVisitDetails();
 });
 

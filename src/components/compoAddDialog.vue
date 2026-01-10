@@ -2,7 +2,7 @@
   <Transition name="fade">
     <div v-if="modelValue" class="dialog">
       <div class="dialog-content animate-slideIn" 
-           style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+           style="font-family: var(--font-primary);">
         
         <!-- زر الإغلاق -->
         <button
