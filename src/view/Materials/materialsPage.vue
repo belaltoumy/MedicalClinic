@@ -139,7 +139,7 @@ import CompoTable from "../../components/compoTable.vue";
 import compoAddDialog from "../../components/compoAddDialog.vue";
 import { _get, _delete } from "../../api/axois";
 import FormMaterial from "../Materials/formMaterial.vue";
-import Dashboard from "../../components/Dashboard.vue";
+import Dashboard from "../../components/dashboard.vue";
 import useToast from "../../toast/toast.js";
 
 const { showToast } = useToast();
