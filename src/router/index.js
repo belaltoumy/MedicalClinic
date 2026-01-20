@@ -20,7 +20,7 @@ const routes = [
   {
     path: "/users",
     name: "users",
-    component: () => import("../view/Users/UsersPage.vue"),
+    component: () => import("../view/Users/usersPage.vue"),
     beforeEnter: isAuth,
   },
   {
