@@ -180,7 +180,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import CompoTable from "../../components/CompoTable.vue";
+import CompoTable from "../../components/compoTable.vue";
 import ViewDetailsVisitDialog from "../Visit/viewDetailsVisit.vue";
 import { _get, _delete } from "../../api/axois";
 import compoDialog from "../../components/compoDialog.vue";
