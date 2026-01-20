@@ -115,7 +115,7 @@ import compoTable from '../../components/compoTable.vue';
 import compoAddDialog from '../../components/compoAddDialog.vue';
 import formProcedure from '../Procedures/formProcedure.vue';
 import { _get ,_delete } from '../../api/axois';
-import Dashboard from '../../components/Dashboard.vue';
+import Dashboard from '../../components/dashboard.vue';
 import useToast from "../../toast/toast.js";
 
 const { showToast } = useToast();
