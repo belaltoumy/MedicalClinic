@@ -163,7 +163,7 @@ import compoAddDialog from '../../components/compoAddDialog.vue';
 import Dashboard from '../../components/dashboard.vue';
 import { _get, _delete } from '../../api/axois';
 import formDrawal from './formDrawal.vue';
-import inputSelect from '../../components/inputSelect.vue';
+import inputSelect from '../../components/InputSelect.vue';
 import inputDate from '../../components/inputDate.vue';
 import useToast from '../../toast/toast.js';
 const { showToast } = useToast();

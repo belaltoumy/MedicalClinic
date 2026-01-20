@@ -35,7 +35,7 @@
 
 <script setup>
 import inputText from "../../components/inputText.vue";
-import InputSelect from "../../components/inputSelect.vue";
+import InputSelect from "../../components/InputSelect.vue";
 import InputNumber from "../../components/InputNumber.vue";
 import { onMounted, ref, watch } from "vue";
 import { _post, _put, _get } from "../../api/axois.js";
