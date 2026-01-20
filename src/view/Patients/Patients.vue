@@ -79,7 +79,6 @@
             </template>
           </compoTable>
         </div>
-
         <!-- التنقل بين الصفحات -->
         <div class="pagination-section">
           <button
