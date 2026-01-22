@@ -28,7 +28,7 @@
 <script setup>
 import inputText from "../../components/inputText.vue";
 import inputDate from "../../components/inputDate.vue";
-import inputSelect from "../../components/inputSelect.vue";
+import inputSelect from "../../components/InputSelect.vue";
 import { ref, watch } from "vue";
 import { _post , _put } from "../../api/axois.js";
 import useToast from "../../toast/toast.js";
