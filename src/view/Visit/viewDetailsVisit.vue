@@ -70,23 +70,51 @@
         <button class="add-subvisit-btn" @click="showPaymentsDialog = true">
           تفاصيل الدفعات
         </button>
-        <!-- <button class="add-subvisit-btn" @click="openUpdateProcedureDialog">
-  اضافة اجراء للزيارة  
-</button> -->
+        <button
+          class="add-subvisit-btn"
+          @click="openUpdateProcedureDialog('add')"
+        >
+          إضافة عناصر للزيارة
+        </button>
+        <button
+          class="add-subvisit-btn"
+          @click="openUpdateProcedureDialog('edit')"
+        >
+          تعديل عناصر الزيارة
+        </button>
       </div>
 
       <compoDialog v-model="showPaymentsDialog" title="تفاصيل الدفعات">
         <PaymentDetails :patientId="visit.patientId" />
       </compoDialog>
 
-      <compoDialog v-model="showAddProVisitDialog" title="تعديل الاجراء">
+      <!-- <compoDialog v-model="showAddProVisitDialog" title="اضافة عناصر للزيارة">
         <addProcedureVisit
           :visitId="visit.visitId"
           :visitItems="visit.visitItems"
           @saved="onProcedureAdded"
         />
       </compoDialog>
+      
+      <compoDialog v-model="showAddProVisitDialog" title="تعديل الاجراء">
+        <addProcedureVisit
+          :visitId="visit.visitId"
+          :visitItems="visit.visitItems"
+          @saved="onProcedureAdded"
+        />
+      </compoDialog> -->
 
+      <compoDialog
+        v-model="showAddProVisitDialog"
+        :title="dialogMode === 'add' ? 'إضافة عناصر للزيارة' : 'تعديل الإجراء'"
+      >
+        <addProcedureVisit
+          :visitId="visit.visitId"
+          :visitItems="visit.visitItems"
+          :mode="dialogMode"
+          @saved="onProcedureAdded"
+        />
+      </compoDialog>
       <!-- عناصر الزيارة -->
       <div class="mt-12">
         <h3
@@ -106,7 +134,7 @@
                 <th class="px-4 py-2 text-center">التكلفة</th>
                 <th class="px-4 py-2 text-center">المواد المستهلكة</th>
                 <th class="px-4 py-2 text-center">الكمية</th>
-                <th class="px-4 py-2 text-center">الإجراءات</th>
+                <!-- <th class="px-4 py-2 text-center">الإجراءات</th> -->
               </tr>
             </thead>
 
@@ -139,14 +167,14 @@
                     {{ mat.quantity }}
                   </div>
                 </td>
-                <td class="px-4 py-2 text-center">
-                  <button
-                    class="action-btn edit-btn"
-                    @click="openUpdateProcedureDialog"
-                  >
-                    تعديل عناصر الزيارة
-                  </button>
-                </td>
+                <!-- <td class="px-4 py-2 text-center">
+                <button
+  class="action-btn edit-btn"
+  @click="openUpdateProcedureDialog('edit')"
+>
+  تعديل عناصر الزيارة
+</button>
+                </td> -->
               </tr>
             </tbody>
           </table>
@@ -275,7 +303,12 @@ const { showToast } = useToast();
 
 const showAddProVisitDialog = ref(false);
 const showPaymentsDialog = ref(false);
+const dialogMode = ref("edit");
 
+const openUpdateProcedureDialog = (mode = "add") => {
+  dialogMode.value = mode;
+  showAddProVisitDialog.value = true;
+};
 const props = defineProps({
   visitId: {
     type: String,
@@ -315,23 +348,18 @@ const onProcedureAdded = () => {
   fetchVisitDetails(); // يرجّع العناصر الجديدة
 };
 
-const openUpdateProcedureDialog = () => {
-  showAddProVisitDialog.value = true;
-};
-
 // إضافة زيارة فرعية
 const addSubVisit = async () => {
   if (!visit.value?.visitId) return;
 
   try {
     await _post("/api/Visit/FollowUp", {
-      parentVisitId: visit.value.visitId
+      parentVisitId: visit.value.visitId,
     });
 
     showToast("تم إضافة زيارة المراجعة بنجاح", "success");
     emit("subVisitAdded");
     fetchVisitDetails();
-
   } catch (err) {
     console.error(err);
     showToast("حدث خطأ أثناء إضافة زيارة المراجعة", "error");
@@ -358,9 +386,9 @@ onMounted(() => {
 });
 
 const getTypeName = (type) =>
-  ({ 0: "زيارة أولية", 1: "مراجعة" }[type] || "غير معروف");
+  ({ 0: "زيارة أولية", 1: "مراجعة" })[type] || "غير معروف";
 const getStatusName = (status) =>
-  ({ 0: "قيد الانتظار" }[status] || "غير معروف");
+  ({ 0: "قيد الانتظار" })[status] || "غير معروف";
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
