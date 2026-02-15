@@ -1,4 +1,6 @@
-import { createRouter, createWebHistory } from "vue-router";
+// import { createRouter, createWebHistory } from "vue-router";
+import { createRouter , createWebHashHistory } from "vue-router";
+
 import { isAuth } from "../Auth/authfunc";
 
 const routes = [
@@ -20,7 +22,7 @@ const routes = [
   {
     path: "/users",
     name: "users",
-    component: () => import("../view/Users/UsersPage.vue"),
+    component: () => import("../view/Users/usersPage.vue"),
     beforeEnter: isAuth,
   },
   {
@@ -81,7 +83,8 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  // history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
 });
 

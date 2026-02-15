@@ -180,14 +180,14 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import CompoTable from "../../components/CompoTable.vue";
+import CompoTable from "../../components/compoTable.vue";
 import ViewDetailsVisitDialog from "../Visit/viewDetailsVisit.vue";
 import { _get, _delete } from "../../api/axois";
 import compoDialog from "../../components/compoDialog.vue";
 import compoAddDialog from "../../components/compoAddDialog.vue";
 import addNewVisit from "../../components/addNewVisit.vue";
 import addNewPayment from "../../components/addNewPayment.vue";
-import Dashboard from "../../components/Dashboard.vue";
+import Dashboard from "../../components/dashboard.vue";
 import InputSelect from "../../components/InputSelect.vue";
 import inputText from "../../components/inputText.vue";
 import inputDate from "../../components/inputDate.vue";

@@ -40,7 +40,7 @@
 import inputText from "../../components/inputText.vue";
 import { ref } from "vue";
 import { _post, _put } from "../../api/axois.js";
-import InputNumber from "../../components/InputNumber.vue";
+import InputNumber from "../../components/inputNumber.vue";
 import useToast from "../../toast/toast.js";
 
 const { showToast } = useToast();
